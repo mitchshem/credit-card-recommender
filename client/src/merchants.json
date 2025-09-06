@@ -1,0 +1,15 @@
+{
+  "trader_joes": "groceries",
+  "whole_foods": "groceries",
+  "uber": "rideshare",
+  "lyft": "rideshare",
+  "delta": "flights",
+  "united": "flights",
+  "american_airlines": "flights",
+  "mcdonalds": "dining",
+  "chipotle": "dining",
+  "shell": "gas",
+  "marriott": "hotels",
+  "hilton": "hotels",
+  "expedia": "travel"
+}

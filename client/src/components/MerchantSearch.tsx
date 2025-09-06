@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import cardsData from '../../cards.json';
-import merchantsData from '../../merchants.json';
+import cardsData from '../cards.json';
+import merchantsData from '../merchants.json';
 
 interface DetailedCard {
   id: string;
@@ -76,13 +76,22 @@ const MerchantSearch: React.FC = () => {
     let category: string = merchantsMapping[merchantKey];
     
     if (!category) {
-      const lowerCaseKey = Object.keys(merchantsMapping).find(
-        key => key.toLowerCase() === merchantKey.toLowerCase()
+      const normalizedKey = merchantKey
+        .toLowerCase()
+        .replace(/'/g, '')
+        .replace(/\s+/g, '_');
+      
+      const matchingKey = Object.keys(merchantsMapping).find(
+        key => key.toLowerCase() === normalizedKey || 
+               key.toLowerCase() === merchantKey.toLowerCase() ||
+               merchantKey.toLowerCase().includes(key.toLowerCase()) ||
+               key.toLowerCase().includes(merchantKey.toLowerCase())
       );
-      category = lowerCaseKey ? merchantsMapping[lowerCaseKey] : 'other';
+      
+      category = matchingKey ? merchantsMapping[matchingKey] : 'other';
     }
 
-    if (!category) {
+    if (!category || category === 'other') {
       setRecommendations([]);
       return;
     }
@@ -431,10 +440,19 @@ const MerchantSearch: React.FC = () => {
               let category: string = merchantsMapping[merchantKey];
               
               if (!category) {
-                const lowerCaseKey = Object.keys(merchantsMapping).find(
-                  key => key.toLowerCase() === merchantKey.toLowerCase()
+                const normalizedKey = merchantKey
+                  .toLowerCase()
+                  .replace(/'/g, '')
+                  .replace(/\s+/g, '_');
+                
+                const matchingKey = Object.keys(merchantsMapping).find(
+                  key => key.toLowerCase() === normalizedKey || 
+                         key.toLowerCase() === merchantKey.toLowerCase() ||
+                         merchantKey.toLowerCase().includes(key.toLowerCase()) ||
+                         key.toLowerCase().includes(merchantKey.toLowerCase())
                 );
-                category = lowerCaseKey ? merchantsMapping[lowerCaseKey] : 'other';
+                
+                category = matchingKey ? merchantsMapping[matchingKey] : 'other';
               }
               
               const reward = card.reward_rates[category] || card.reward_rates.other || 1;
