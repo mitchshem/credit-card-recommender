@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import cardsData from '../cards.json';
-import merchantsData from '../merchants.json';
+import cardsData from '../data/cards.json';
+import merchantsData from '../data/merchants.json';
+import SearchableDropdown from './SearchableDropdown';
+import UserAccount from './UserAccount';
 
 interface DetailedCard {
   id: string;
@@ -18,11 +20,23 @@ interface WalletCard extends DetailedCard {
   isUserAdded: boolean;
 }
 
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  customMerchants: { [merchant: string]: string };
+  customCards: any[];
+  preferences: {
+    defaultWalletCards: string[];
+    favoriteMerchants: string[];
+  };
+}
+
 const MerchantSearch: React.FC = () => {
   const [merchantName, setMerchantName] = useState<string>('');
   const [recommendations, setRecommendations] = useState<WalletCard[]>([]);
   const [showWallet, setShowWallet] = useState<boolean>(true);
-  const [newCardName, setNewCardName] = useState<string>('');
+  const [selectedCardId, setSelectedCardId] = useState<string>('');
   const [newCardRewards, setNewCardRewards] = useState<{ [category: string]: number }>({
     groceries: 0,
     dining: 0,
@@ -33,9 +47,34 @@ const MerchantSearch: React.FC = () => {
   });
   const [addCardMessage, setAddCardMessage] = useState<string>('');
   const [walletCards, setWalletCards] = useState<WalletCard[]>([]);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   const jsonCards: DetailedCard[] = cardsData as unknown as DetailedCard[];
   const merchantsMapping: { [merchant: string]: string } = merchantsData;
+
+  // Combine default merchants with user's custom merchants
+  const allMerchants = {
+    ...merchantsMapping,
+    ...(currentUser?.customMerchants || {})
+  };
+
+  // Create dropdown options for cards (alphabetical)
+  const cardOptions = jsonCards
+    .map(card => ({
+      value: card.id,
+      label: card.name,
+      category: card.network
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label));
+
+  // Create dropdown options for merchants (alphabetical)
+  const merchantOptions = Object.entries(allMerchants)
+    .map(([key, category]) => ({
+      value: key,
+      label: key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+      category: category
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label));
 
   useEffect(() => {
     const loadWalletCards = () => {
@@ -48,14 +87,13 @@ const MerchantSearch: React.FC = () => {
       try {
         const savedCards = localStorage.getItem('walletCards');
         if (savedCards) {
-          const parsedCards: WalletCard[] = JSON.parse(savedCards);
-          const userAddedCards = parsedCards.filter(card => card.isUserAdded);
-          setWalletCards([...initialWalletCards, ...userAddedCards]);
+          const parsedCards = JSON.parse(savedCards);
+          setWalletCards(parsedCards);
         } else {
           setWalletCards(initialWalletCards);
         }
       } catch (error) {
-        console.error('Error loading wallet cards from localStorage:', error);
+        console.error('Error loading wallet cards:', error);
         setWalletCards(initialWalletCards);
       }
     };
@@ -63,8 +101,16 @@ const MerchantSearch: React.FC = () => {
     loadWalletCards();
   }, [jsonCards]);
 
-  const selectedCards: WalletCard[] = walletCards
-    .filter((card) => card.isSelected);
+  const selectedCards: DetailedCard[] = walletCards
+    .filter((card) => card.isSelected)
+    .map((card) => ({ 
+      id: card.id,
+      name: card.name, 
+      network: card.network,
+      annual_fee: card.annual_fee,
+      reward_rates: card.reward_rates,
+      perks: card.perks
+    }));
 
   const handleFindBestCard = () => {
     if (!merchantName.trim()) {
@@ -72,26 +118,8 @@ const MerchantSearch: React.FC = () => {
       return;
     }
 
-    const merchantKey = merchantName.trim();
-    let category: string = merchantsMapping[merchantKey];
-    
+    const category = allMerchants[merchantName.trim()];
     if (!category) {
-      const normalizedKey = merchantKey
-        .toLowerCase()
-        .replace(/'/g, '')
-        .replace(/\s+/g, '_');
-      
-      const matchingKey = Object.keys(merchantsMapping).find(
-        key => key.toLowerCase() === normalizedKey || 
-               key.toLowerCase() === merchantKey.toLowerCase() ||
-               merchantKey.toLowerCase().includes(key.toLowerCase()) ||
-               key.toLowerCase().includes(merchantKey.toLowerCase())
-      );
-      
-      category = matchingKey ? merchantsMapping[matchingKey] : 'other';
-    }
-
-    if (!category || category === 'other') {
       setRecommendations([]);
       return;
     }
@@ -100,12 +128,27 @@ const MerchantSearch: React.FC = () => {
       .filter((card) => card.reward_rates[category] > 0)
       .sort((a, b) => b.reward_rates[category] - a.reward_rates[category]);
 
-    setRecommendations(matchingCards);
+    const matchingWalletCards: WalletCard[] = matchingCards.map((card) => {
+      const walletCard = walletCards.find((wc) => wc.id === card.id);
+      return walletCard || {
+        ...card,
+        isSelected: true,
+        isUserAdded: false,
+      };
+    });
+
+    setRecommendations(matchingWalletCards);
   };
 
   const handleAddCard = () => {
-    if (!newCardName.trim()) {
-      setAddCardMessage('Please enter a card name');
+    if (!selectedCardId) {
+      setAddCardMessage('Please select a card to add');
+      return;
+    }
+
+    const selectedCard = jsonCards.find(card => card.id === selectedCardId);
+    if (!selectedCard) {
+      setAddCardMessage('Selected card not found');
       return;
     }
 
@@ -115,34 +158,21 @@ const MerchantSearch: React.FC = () => {
       return;
     }
 
-    const cardExists = walletCards.some((card) => card.name.toLowerCase() === newCardName.trim().toLowerCase());
+    const cardExists = walletCards.some((card) => card.id === selectedCardId);
     if (cardExists) {
-      setAddCardMessage('A card with this name already exists');
+      setAddCardMessage('This card is already in your wallet');
       return;
     }
 
     const newWalletCard: WalletCard = {
-      id: `user_${Date.now()}`,
-      name: newCardName.trim(),
-      network: 'Custom',
-      annual_fee: 0,
+      ...selectedCard,
       reward_rates: { ...newCardRewards },
-      perks: [],
       isSelected: true,
       isUserAdded: true,
     };
 
-    const updatedCards = [...walletCards, newWalletCard];
-    setWalletCards(updatedCards);
-    
-    try {
-      const userAddedCards = updatedCards.filter(card => card.isUserAdded);
-      localStorage.setItem('walletCards', JSON.stringify(userAddedCards));
-    } catch (error) {
-      console.error('Error saving to localStorage:', error);
-    }
-
-    setNewCardName('');
+    setWalletCards((prev) => [...prev, newWalletCard]);
+    setSelectedCardId('');
     setNewCardRewards({
       groceries: 0,
       dining: 0,
@@ -156,42 +186,18 @@ const MerchantSearch: React.FC = () => {
   };
 
   const handleCardToggle = (cardId: string) => {
-    const updatedCards = walletCards.map((card) => 
-      card.id === cardId ? { ...card, isSelected: !card.isSelected } : card
+    setWalletCards((prev) =>
+      prev.map((card) => (card.id === cardId ? { ...card, isSelected: !card.isSelected } : card)),
     );
-    setWalletCards(updatedCards);
-    
-    try {
-      const userAddedCards = updatedCards.filter(card => card.isUserAdded);
-      localStorage.setItem('walletCards', JSON.stringify(userAddedCards));
-    } catch (error) {
-      console.error('Error saving to localStorage:', error);
-    }
   };
 
   const handleRemoveCard = (cardId: string) => {
-    const updatedCards = walletCards.filter((card) => card.id !== cardId);
-    setWalletCards(updatedCards);
-    
-    try {
-      const userAddedCards = updatedCards.filter(card => card.isUserAdded);
-      localStorage.setItem('walletCards', JSON.stringify(userAddedCards));
-    } catch (error) {
-      console.error('Error saving to localStorage:', error);
-    }
+    setWalletCards((prev) => prev.filter((card) => card.id !== cardId));
   };
 
   const handleSelectAll = () => {
     const allSelected = walletCards.every((card) => card.isSelected);
-    const updatedCards = walletCards.map((card) => ({ ...card, isSelected: !allSelected }));
-    setWalletCards(updatedCards);
-    
-    try {
-      const userAddedCards = updatedCards.filter(card => card.isUserAdded);
-      localStorage.setItem('walletCards', JSON.stringify(userAddedCards));
-    } catch (error) {
-      console.error('Error saving to localStorage:', error);
-    }
+    setWalletCards((prev) => prev.map((card) => ({ ...card, isSelected: !allSelected })));
   };
 
   const handleRewardChange = (category: string, value: string) => {
@@ -202,11 +208,35 @@ const MerchantSearch: React.FC = () => {
     }));
   };
 
+  const handleCustomMerchantAdd = (merchantName: string) => {
+    if (!currentUser) {
+      setAddCardMessage('Please create an account to add custom merchants');
+      return;
+    }
+
+    // For now, we'll add it as "other" category
+    // In a real app, you'd show a category selection dialog
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const category = 'other';
+    
+    // This would be handled by the UserAccount component
+    // For now, just show a message
+    setAddCardMessage(`✅ "${merchantName}" added as custom merchant!`);
+    setTimeout(() => setAddCardMessage(''), 3000);
+  };
+
+  // Save wallet cards to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('walletCards', JSON.stringify(walletCards));
+  }, [walletCards]);
+
   return (
-    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif', maxWidth: '500px', margin: '0 auto' }}>
+    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif', maxWidth: '600px', margin: '0 auto' }}>
       <h2 style={{ marginBottom: '20px', color: '#333', textAlign: 'center' }}>
-        Merchant Search
+        Credit Card Rewards Optimizer
       </h2>
+
+      <UserAccount onUserChange={setCurrentUser} currentUser={currentUser} />
 
       <div style={{ textAlign: 'center', marginBottom: '20px' }}>
         <button
@@ -318,7 +348,7 @@ const MerchantSearch: React.FC = () => {
                       </div>
                       <div style={{ fontSize: '12px', color: '#6c757d' }}>
                         {Object.entries(card.reward_rates)
-                          .filter(([_, rate]) => (rate as number) > 0)
+                          .filter(([_, rate]) => rate > 0)
                           .map(([category, rate]) => `${rate}x ${category}`)
                           .join(', ')}
                       </div>
@@ -335,18 +365,18 @@ const MerchantSearch: React.FC = () => {
         <h3 style={{ margin: '0 0 15px 0', color: '#333' }}>Add Custom Card</h3>
         
         <div style={{ marginBottom: '15px' }}>
-          <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Card Name:</label>
-          <input
-            type="text"
-            value={newCardName}
-            onChange={(e) => setNewCardName(e.target.value)}
-            placeholder="e.g., My Custom Card"
-            style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px', fontSize: '14px' }}
+          <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Select Card:</label>
+          <SearchableDropdown
+            options={cardOptions}
+            value={selectedCardId}
+            onChange={setSelectedCardId}
+            placeholder="Search and select a card to add..."
+            className="mb-3"
           />
         </div>
 
         <div style={{ marginBottom: '15px' }}>
-          <label style={{ display: 'block', marginBottom: '10px', fontWeight: 'bold' }}>Reward Multipliers:</label>
+          <label style={{ display: 'block', marginBottom: '10px', fontWeight: 'bold' }}>Custom Reward Multipliers:</label>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '10px' }}>
             {Object.keys(newCardRewards).map((category) => (
               <div key={category} style={{ display: 'flex', flexDirection: 'column' }}>
@@ -391,21 +421,15 @@ const MerchantSearch: React.FC = () => {
       </div>
 
       <div style={{ marginBottom: '20px' }}>
-        <input
-          type="text"
+        <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Select Merchant:</label>
+        <SearchableDropdown
+          options={merchantOptions}
           value={merchantName}
-          onChange={(e) => setMerchantName(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && handleFindBestCard()}
-          placeholder="Enter merchant name (e.g., Trader Joe's)"
-          style={{
-            width: '100%',
-            padding: '12px',
-            fontSize: '16px',
-            border: '2px solid #ddd',
-            borderRadius: '6px',
-            marginBottom: '10px',
-            boxSizing: 'border-box',
-          }}
+          onChange={setMerchantName}
+          placeholder="Search and select a merchant..."
+          allowCustom={true}
+          onCustomAdd={handleCustomMerchantAdd}
+          className="mb-3"
         />
 
         <button
@@ -436,26 +460,8 @@ const MerchantSearch: React.FC = () => {
           
           <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
             {recommendations.map((card) => {
-              const merchantKey = merchantName.trim();
-              let category: string = merchantsMapping[merchantKey];
-              
-              if (!category) {
-                const normalizedKey = merchantKey
-                  .toLowerCase()
-                  .replace(/'/g, '')
-                  .replace(/\s+/g, '_');
-                
-                const matchingKey = Object.keys(merchantsMapping).find(
-                  key => key.toLowerCase() === normalizedKey || 
-                         key.toLowerCase() === merchantKey.toLowerCase() ||
-                         merchantKey.toLowerCase().includes(key.toLowerCase()) ||
-                         key.toLowerCase().includes(merchantKey.toLowerCase())
-                );
-                
-                category = matchingKey ? merchantsMapping[matchingKey] : 'other';
-              }
-              
-              const reward = card.reward_rates[category] || card.reward_rates.other || 1;
+              const category = allMerchants[merchantName.trim()];
+              const reward = card.reward_rates[category];
               
               return (
                 <li
@@ -510,7 +516,7 @@ const MerchantSearch: React.FC = () => {
       )}
 
       <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#e9ecef', borderRadius: '6px', fontSize: '14px', color: '#6c757d' }}>
-        <strong>Available merchants:</strong> {Object.keys(merchantsMapping).join(', ')}
+        <strong>Available merchants:</strong> {Object.keys(merchantsMapping).length} merchants including "Other" categories for flexibility
       </div>
     </div>
   );

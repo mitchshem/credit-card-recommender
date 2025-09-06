@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import MerchantSearch from '../components/MerchantSearch';
 
 const SmartMatch: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(0);
@@ -35,10 +36,15 @@ const SmartMatch: React.FC = () => {
     <div className="page-container">
       <div className="page-header">
         <h1>🎯 Smart Match</h1>
-        <p>Take our quiz to find the perfect credit card for your lifestyle</p>
+        <p>Find the perfect credit card for any merchant or take our lifestyle quiz</p>
+      </div>
+
+      <div style={{ marginBottom: '30px' }}>
+        <MerchantSearch />
       </div>
 
       <div className="quiz-container">
+        <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Or Take Our Lifestyle Quiz</h2>
         {currentStep < quizSteps.length ? (
           <div className="quiz-step">
             <div className="progress-bar">
