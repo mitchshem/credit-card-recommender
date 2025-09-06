@@ -1,0 +1,25 @@
+{
+  "name": "credit-card-scraper",
+  "version": "1.0.0",
+  "description": "Modular credit card data scraper for NerdWallet, The Points Guy, and Bankrate",
+  "main": "index.js",
+  "scripts": {
+    "scrape": "node index.js",
+    "scrape-nerdwallet": "node scrapers/nerdwallet.js",
+    "scrape-tpg": "node scrapers/thepointsguy.js",
+    "scrape-bankrate": "node scrapers/bankrate.js",
+    "refresh": "node refresh-cards.js"
+  },
+  "dependencies": {
+    "selenium-webdriver": "^4.15.0",
+    "cheerio": "^1.0.0-rc.12",
+    "axios": "^1.6.0",
+    "fs-extra": "^11.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.8.0"
+  },
+  "keywords": ["credit-cards", "scraper", "finance"],
+  "author": "Credit Card Recommender",
+  "license": "MIT"
+}

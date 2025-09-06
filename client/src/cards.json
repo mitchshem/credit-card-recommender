@@ -1,68 +1,547 @@
 [
   {
-    "id": "amex_gold",
-    "name": "American Express® Gold Card",
+    "id": "americanex_blue_cash_preferred_card_from_american_express",
+    "name": "Blue Cash Preferred Card from American Express",
     "network": "American Express",
-    "annual_fee": 250,
+    "annual_fee": 2503000,
     "reward_rates": {
-      "dining": 4,
-      "groceries": 4,
-      "flights": 3,
-      "other": 1
+      "other": 1,
+      "groceries": 6
     },
     "perks": [
-      "Up to $120 dining credit (Grubhub, Seamless, Cheesecake Factory, etc.)",
-      "No foreign transaction fees"
+      "Best for: Families & households",
+      "Earn a $250 statement credit after spending $3,000 on purchases in the first six months of card membership.",
+      "All credit levels",
+      "No credit history",
+      "Recommended credit score:"
     ]
   },
   {
-    "id": "chase_sapphire_preferred",
-    "name": "Chase Sapphire Preferred® Card",
+    "id": "citi_citi_double_cash_card",
+    "name": "Citi Double Cash Card",
+    "network": "Visa",
+    "annual_fee": 0,
+    "reward_rates": {
+      "other": 2
+    },
+    "perks": [
+      "Best for: Simplicity + high rate",
+      "All credit levels",
+      "No credit history",
+      "Recommended credit score:"
+    ]
+  },
+  {
+    "id": "chase_chase_freedom_unlimited",
+    "name": "Chase Freedom Unlimited",
+    "network": "Visa",
+    "annual_fee": 0,
+    "reward_rates": {
+      "other": 1.5
+    },
+    "perks": [
+      "Best for: Cash back for travel bookings",
+      "Best for: All-around cash back",
+      "All credit levels",
+      "No credit history",
+      "Recommended credit score:"
+    ]
+  },
+  {
+    "id": "chase_chase_sapphire_preferred_card",
+    "name": "Chase Sapphire Preferred Card",
     "network": "Visa",
     "annual_fee": 95,
     "reward_rates": {
-      "travel": 2,
-      "dining": 2,
-      "online_grocery": 1,
       "other": 1
     },
     "perks": [
-      "Primary rental car insurance",
-      "25% more value redeeming through Chase Travel"
+      "Best for: Max flexibility + big bonus",
+      "Best for: Bonus travel rewards",
+      "Best for: Point transfers to hotel programs",
+      "All credit levels",
+      "No credit history"
     ]
   },
   {
-    "id": "capital_one_venture_x",
+    "id": "capitalone_capital_one_venture_x_rewards_credit_card",
     "name": "Capital One Venture X Rewards Credit Card",
     "network": "Visa",
     "annual_fee": 395,
     "reward_rates": {
-      "flights": 5,
-      "hotels": 10,
       "other": 2
     },
     "perks": [
-      "Up to $300 annual travel credit (Capital One Travel)",
-      "10,000 bonus miles every anniversary",
-      "Priority Pass & Capital One lounge access"
+      "Best for: Travel portal benefits",
+      "All credit levels",
+      "No credit history",
+      "Recommended credit score:"
     ]
   },
   {
-    "id": "citi_premier",
-    "name": "Citi Premier® Card",
-    "network": "Mastercard",
-    "annual_fee": 95,
+    "id": "capitalone_capital_one_savor_cash_rewards_credit_card",
+    "name": "Capital One Savor Cash Rewards Credit Card",
+    "network": "Visa",
+    "annual_fee": 0,
     "reward_rates": {
-      "dining": 3,
-      "groceries": 3,
-      "gas": 3,
-      "airfare": 3,
-      "hotels": 3,
       "other": 1
     },
     "perks": [
-      "Transfer points to 15+ airline partners",
-      "No foreign transaction fees"
+      "Best for: Going out & staying in",
+      "All credit levels",
+      "No credit history",
+      "Recommended credit score:"
     ]
+  },
+  {
+    "id": "americanex_the_platinum_card_from_american_express",
+    "name": "The Platinum Card from American Express",
+    "network": "American Express",
+    "annual_fee": 695,
+    "reward_rates": {
+      "other": 1
+    },
+    "perks": [
+      "Best for: Luxury travel perks",
+      "All credit levels",
+      "No credit history",
+      "Recommended credit score:"
+    ]
+  },
+  {
+    "id": "americanex_american_express_gold_card",
+    "name": "American Express Gold Card",
+    "network": "American Express",
+    "annual_fee": 325,
+    "reward_rates": {
+      "other": 1
+    },
+    "perks": [
+      "Best for: Big rewards on everyday spending",
+      "All credit levels",
+      "No credit history",
+      "Recommended credit score:"
+    ]
+  },
+  {
+    "id": "chase_chase_sapphire_reserve",
+    "name": "Chase Sapphire Reserve",
+    "network": "Visa",
+    "annual_fee": 795,
+    "reward_rates": {
+      "other": 1
+    },
+    "perks": [
+      "Best for: Bonus rewards + high-end perks",
+      "All credit levels",
+      "No credit history",
+      "Recommended credit score:"
+    ]
+  },
+  {
+    "id": "capitalone_capital_one_venture_rewards_credit_card",
+    "name": "Capital One Venture Rewards Credit Card",
+    "network": "Visa",
+    "annual_fee": 95,
+    "reward_rates": {
+      "other": 2
+    },
+    "perks": [
+      "Best for: Flat-rate rewards",
+      "Best for: Simple travel rewards",
+      "Best for: Easy redemption"
+    ]
+  },
+  {
+    "id": "unknown_marriott_bonvoy_boundless_credit_card",
+    "name": "Marriott Bonvoy Boundless Credit Card",
+    "network": "Visa",
+    "annual_fee": 95,
+    "reward_rates": {
+      "other": 2
+    },
+    "perks": [
+      "Best for: Best hotel card",
+      "Best for: Hotel credit card",
+      "Best for: Marriott"
+    ]
+  },
+  {
+    "id": "americanex_hilton_honors_american_express_surpass_card",
+    "name": "Hilton Honors American Express Surpass Card",
+    "network": "American Express",
+    "annual_fee": 150,
+    "reward_rates": {
+      "other": 3
+    },
+    "perks": [
+      "Best for: Hilton"
+    ]
+  },
+  {
+    "id": "americanex_the_hilton_honors_american_express_business_card",
+    "name": "The Hilton Honors American Express Business Card",
+    "network": "American Express",
+    "annual_fee": 195,
+    "reward_rates": {
+      "other": 3
+    },
+    "perks": [
+      "Best for: Hotel card for small business"
+    ]
+  },
+  {
+    "id": "wellsfargo_wells_fargo_reflect_card",
+    "name": "Wells Fargo Reflect Card",
+    "network": "Visa",
+    "annual_fee": 0,
+    "reward_rates": {
+      "other": 1
+    },
+    "perks": [
+      "All credit levels",
+      "No credit history",
+      "Recommended credit score:",
+      "Recommended credit score:"
+    ]
+  },
+  {
+    "id": "discover_discover_it_secured_credit_card",
+    "name": "Discover it Secured Credit Card",
+    "network": "Discover",
+    "annual_fee": 0,
+    "reward_rates": {
+      "other": 1
+    },
+    "perks": [
+      "All credit levels",
+      "No credit history",
+      "Recommended credit score:",
+      "Recommended credit score:"
+    ]
+  },
+  {
+    "id": "capitalone_capital_one_quicksilverone_cash_rewards_credit_car",
+    "name": "Capital One QuicksilverOne Cash Rewards Credit Card",
+    "network": "Visa",
+    "annual_fee": 0,
+    "reward_rates": {
+      "other": 1
+    },
+    "perks": [
+      "All credit levels",
+      "No credit history",
+      "Recommended credit score:",
+      "Recommended credit score:"
+    ]
+  },
+  {
+    "id": "capitalone_capital_one_platinum_secured_credit_card",
+    "name": "Capital One Platinum Secured Credit Card",
+    "network": "Visa",
+    "annual_fee": 0,
+    "reward_rates": {
+      "other": 1
+    },
+    "perks": [
+      "All credit levels",
+      "No credit history",
+      "Recommended credit score:",
+      "Recommended credit score:"
+    ]
+  },
+  {
+    "id": "citi_citi_custom_cash_card",
+    "name": "Citi Custom Cash Card",
+    "network": "Visa",
+    "annual_fee": 0,
+    "reward_rates": {
+      "other": 1
+    },
+    "perks": [
+      "All credit levels",
+      "No credit history",
+      "Recommended credit score:",
+      "Recommended credit score:"
+    ]
+  },
+  {
+    "id": "wellsfargo_wells_fargo_active_cash_card",
+    "name": "Wells Fargo Active Cash Card",
+    "network": "Visa",
+    "annual_fee": 0,
+    "reward_rates": {
+      "other": 2
+    },
+    "perks": [
+      "Best for: Flat-rate cash back"
+    ]
+  },
+  {
+    "id": "unknown_one_key_card",
+    "name": "One Key+ Card",
+    "network": "Visa",
+    "annual_fee": 99,
+    "reward_rates": {
+      "other": 2
+    },
+    "perks": [
+      "Best for: Expedia, Hotels.com and Vrbo"
+    ]
+  },
+  {
+    "id": "unknown_bilt_world_elite_mastercard_credit_card",
+    "name": "Bilt World Elite Mastercard Credit Card",
+    "network": "Mastercard",
+    "annual_fee": 0,
+    "reward_rates": {
+      "other": 1
+    },
+    "perks": [
+      "Best for: Travel rewards for rent payments",
+      "Best for: Rewards on rent payments"
+    ]
+  },
+  {
+    "id": "unknown_the_new_united_explorer_card",
+    "name": "The New United Explorer Card",
+    "network": "Visa",
+    "annual_fee": 0,
+    "reward_rates": {
+      "other": 1
+    },
+    "perks": [
+      "Best for: Best airline card",
+      "Best for: Airline card"
+    ]
+  },
+  {
+    "id": "capitalone_capital_one_venture_x_business",
+    "name": "Capital One Venture X Business",
+    "network": "Visa",
+    "annual_fee": 395,
+    "reward_rates": {
+      "other": 2
+    },
+    "perks": [
+      "Best for: Business travelers"
+    ]
+  },
+  {
+    "id": "capitalone_capital_one_ventureone_rewards_credit_card_miles_b",
+    "name": "Capital One VentureOne Rewards Credit Card - Miles Boost",
+    "network": "Visa",
+    "annual_fee": 0,
+    "reward_rates": {
+      "other": 1.25
+    },
+    "perks": [
+      "Best for: Flat-rate rewards + no annual fee"
+    ]
+  },
+  {
+    "id": "unknown_penfed_pathfinder_rewards_visa_signature_card",
+    "name": "PenFed Pathfinder Rewards Visa Signature Card",
+    "network": "Visa",
+    "annual_fee": 95,
+    "reward_rates": {
+      "other": 1.5
+    },
+    "perks": [
+      "Best for: Credit union benefits"
+    ]
+  },
+  {
+    "id": "wellsfargo_wells_fargo_autograph_journey_card",
+    "name": "Wells Fargo Autograph Journey Card",
+    "network": "Visa",
+    "annual_fee": 95,
+    "reward_rates": {
+      "other": 1
+    },
+    "perks": [
+      "Best for: Booking directly with airlines/hotels",
+      "Best for: Booking with any hotel "
+    ]
+  },
+  {
+    "id": "wellsfargo_wells_fargo_autograph_card",
+    "name": "Wells Fargo Autograph Card",
+    "network": "Visa",
+    "annual_fee": 0,
+    "reward_rates": {
+      "other": 1
+    },
+    "perks": [
+      "Best for: Bonus rewards + no annual fee"
+    ]
+  },
+  {
+    "id": "discover_discover_it_cash_back",
+    "name": "Discover it Cash Back",
+    "network": "Discover",
+    "annual_fee": 0,
+    "reward_rates": {
+      "other": 1
+    },
+    "perks": [
+      "Best for: Quarterly categories + matching bonus"
+    ]
+  },
+  {
+    "id": "chase_chase_freedom_flex",
+    "name": "Chase Freedom Flex",
+    "network": "Visa",
+    "annual_fee": 0,
+    "reward_rates": {
+      "other": 1
+    },
+    "perks": [
+      "Best for: Quarterly categories + cash bonus"
+    ]
+  },
+  {
+    "id": "discover_discover_it_student_chrome",
+    "name": "Discover it Student Chrome",
+    "network": "Discover",
+    "annual_fee": 0,
+    "reward_rates": {
+      "other": 1
+    },
+    "perks": [
+      "Best for: College students"
+    ]
+  },
+  {
+    "id": "unknown_choice_privileges_mastercard",
+    "name": "Choice Privileges Mastercard",
+    "network": "Mastercard",
+    "annual_fee": 0,
+    "reward_rates": {
+      "other": 1
+    },
+    "perks": [
+      "Best for: Choice Hotels points"
+    ]
+  },
+  {
+    "id": "citi_citi_strata_elite_card",
+    "name": "Citi Strata Elite Card",
+    "network": "Visa",
+    "annual_fee": 595,
+    "reward_rates": {
+      "other": 1.5
+    },
+    "perks": [
+      "Best for: American Airlines loyalists"
+    ]
+  },
+  {
+    "id": "capitalone_apply_for_capital_one_venture_rewards_credit_card_",
+    "name": "Apply for Capital One Venture Rewards Credit Card Capital One Venture Rewards Credit Card 4.5",
+    "network": "Visa",
+    "annual_fee": 75000,
+    "reward_rates": {
+      "other": 1
+    },
+    "perks": [
+      "Apply for Capital One Venture Rewards Credit Card Capital One Venture Rewards Credit Card 4.5",
+      "Apply now for Capital One Venture Rewards Credit Card See Details See rates & fees"
+    ]
+  },
+  {
+    "id": "capitalone_apply_for_capital_one_venture_x_rewards_credit_car",
+    "name": "Apply for Capital One Venture X Rewards Credit Card Capital One Venture X Rewards Credit Card 4.5",
+    "network": "Visa",
+    "annual_fee": 75000,
+    "reward_rates": {
+      "other": 1
+    },
+    "perks": [
+      "Apply for Capital One Venture X Rewards Credit Card Capital One Venture X Rewards Credit Card 4.5",
+      "Apply now for Capital One Venture X Rewards Credit Card See Details See rates & fees"
+    ]
+  },
+  {
+    "id": "citi_citi_strata_premier_card",
+    "name": "Citi Strata Premier Card",
+    "network": "Visa",
+    "annual_fee": 95,
+    "reward_rates": {
+      "other": 1
+    },
+    "perks": [
+      "Best for: Triple points on multiple categories"
+    ]
+  },
+  {
+    "id": "unknown_ihg_one_rewards_premier_credit_card",
+    "name": "IHG One Rewards Premier Credit Card",
+    "network": "Visa",
+    "annual_fee": 99,
+    "reward_rates": {
+      "other": 1
+    },
+    "perks": [
+      "Best for: Holiday Inn/IHG"
+    ]
+  },
+  {
+    "id": "unknown_world_of_hyatt_credit_card",
+    "name": "World of Hyatt Credit Card",
+    "network": "Visa",
+    "annual_fee": 95,
+    "reward_rates": {
+      "other": 1
+    },
+    "perks": [
+      "Best for: Hyatt"
+    ]
+  },
+  {
+    "id": "chase_new_offer_apply_for_chase_sapphire_preferred_card_",
+    "name": "NEW OFFER Apply for Chase Sapphire Preferred Card Chase Sapphire Preferred Card 4.5",
+    "network": "Visa",
+    "annual_fee": 7500060000,
+    "reward_rates": {
+      "other": 1
+    },
+    "perks": [
+      "Apply now for Chase Sapphire Preferred Card See Details See rates & fees"
+    ]
+  },
+  {
+    "id": "americanex_apply_for_the_platinum_card_from_american_express_",
+    "name": "Apply for The Platinum Card from American Express The Platinum Card from American Express 4.5",
+    "network": "American Express",
+    "annual_fee": 175000,
+    "reward_rates": {
+      "other": 1
+    },
+    "perks": [
+      "Apply now for The Platinum Card from American Express See Details See rates & fees"
+    ]
+  },
+  {
+    "id": "citi_limitedtime_offer_apply_for_citi_strata_elite_card",
+    "name": "LIMITED-TIME OFFER Apply for Citi Strata Elite Card Citi Strata Elite Card 3.5",
+    "network": "Visa",
+    "annual_fee": 80000,
+    "reward_rates": {
+      "other": 1
+    },
+    "perks": [
+      "Apply now for Citi Strata Elite Card See Details See rates & fees"
+    ]
+  },
+  {
+    "id": "unknown_5x_miles",
+    "name": "5X MILES",
+    "network": "Visa",
+    "annual_fee": 0,
+    "reward_rates": {
+      "other": 1
+    },
+    "perks": []
   }
 ]
