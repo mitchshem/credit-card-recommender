@@ -1,21 +1,164 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import cardsData from '../data/cards.json';
+
+interface Card {
+  id: string;
+  name: string;
+  network: string;
+  annual_fee: number;
+  reward_rates: { [category: string]: number };
+  perks: string[];
+  source?: string;
+  category?: string;
+  signup_bonus?: string;
+}
+
+interface SpendingData {
+  groceries: number;
+  dining: number;
+  gas: number;
+  travel: number;
+  other: number;
+}
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  customMerchants: { [merchant: string]: string };
+  customCards: any[];
+  preferences: {
+    defaultWalletCards: string[];
+    favoriteMerchants: string[];
+  };
+  spendingData?: SpendingData;
+}
 
 const Analytics: React.FC = () => {
   const [timeRange, setTimeRange] = useState('month');
+  const [spendingData, setSpendingData] = useState<SpendingData>({
+    groceries: 0,
+    dining: 0,
+    gas: 0,
+    travel: 0,
+    other: 0
+  });
+  const [showSpendingForm, setShowSpendingForm] = useState(false);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
 
-  const spendingData = {
-    groceries: 850,
-    dining: 420,
-    gas: 180,
-    travel: 320,
-    other: 230
+  useEffect(() => {
+    const savedUser = localStorage.getItem('currentUser');
+    if (savedUser) {
+      const user = JSON.parse(savedUser);
+      setCurrentUser(user);
+      if (user.spendingData) {
+        setSpendingData(user.spendingData);
+      }
+    }
+  }, []);
+
+  const updateSpendingData = (newSpending: SpendingData) => {
+    setSpendingData(newSpending);
+    
+    if (currentUser) {
+      const updatedUser = {
+        ...currentUser,
+        spendingData: newSpending
+      };
+      localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+      setCurrentUser(updatedUser);
+    }
+    
+    setShowSpendingForm(false);
   };
 
-  const rewardsData = {
-    earned: 2847,
-    potential: 3420,
-    missed: 573
+  const calculateRewards = () => {
+    const cards = cardsData as unknown as Card[];
+    const walletCards = JSON.parse(localStorage.getItem('walletCards') || '[]');
+    const userCards = cards.filter(card => walletCards.includes(card.id));
+
+    let totalEarned = 0;
+    let potentialEarned = 0;
+
+    Object.entries(spendingData).forEach(([category, amount]) => {
+      const bestUserCard = userCards.reduce((best, card) => {
+        const rate = card.reward_rates[category] || card.reward_rates.other || 1;
+        const bestRate = best ? (best.reward_rates[category] || best.reward_rates.other || 1) : 0;
+        return rate > bestRate ? card : best;
+      }, null as Card | null);
+
+      const bestOverallCard = cards.reduce((best, card) => {
+        const rate = card.reward_rates[category] || card.reward_rates.other || 1;
+        const bestRate = best.reward_rates[category] || best.reward_rates.other || 1;
+        return rate > bestRate ? card : best;
+      });
+
+      const userRate = bestUserCard ? (bestUserCard.reward_rates[category] || bestUserCard.reward_rates.other || 1) : 1;
+      const optimalRate = bestOverallCard.reward_rates[category] || bestOverallCard.reward_rates.other || 1;
+
+      totalEarned += amount * userRate;
+      potentialEarned += amount * optimalRate;
+    });
+
+    return {
+      earned: Math.round(totalEarned),
+      potential: Math.round(potentialEarned),
+      missed: Math.round(potentialEarned - totalEarned)
+    };
   };
+
+  const getOptimizationOpportunities = () => {
+    const cards = cardsData as unknown as Card[];
+    const walletCards = JSON.parse(localStorage.getItem('walletCards') || '[]');
+    const userCards = cards.filter(card => walletCards.includes(card.id));
+    const opportunities: Array<{
+      category: string;
+      currentCard: string;
+      recommendedCard: string;
+      currentRate: number;
+      recommendedRate: number;
+      monthlyGain: number;
+      spending: number;
+    }> = [];
+
+    Object.entries(spendingData).forEach(([category, amount]) => {
+      if (amount === 0) return;
+
+      const bestUserCard = userCards.reduce((best, card) => {
+        const rate = card.reward_rates[category] || card.reward_rates.other || 1;
+        const bestRate = best ? (best.reward_rates[category] || best.reward_rates.other || 1) : 0;
+        return rate > bestRate ? card : best;
+      }, null as Card | null);
+
+      const bestOverallCard = cards.reduce((best, card) => {
+        const rate = card.reward_rates[category] || card.reward_rates.other || 1;
+        const bestRate = best.reward_rates[category] || best.reward_rates.other || 1;
+        return rate > bestRate ? card : best;
+      });
+
+      const userRate = bestUserCard ? (bestUserCard.reward_rates[category] || bestUserCard.reward_rates.other || 1) : 1;
+      const optimalRate = bestOverallCard.reward_rates[category] || bestOverallCard.reward_rates.other || 1;
+
+      if (optimalRate > userRate) {
+        const monthlyGain = amount * (optimalRate - userRate);
+        opportunities.push({
+          category,
+          currentCard: bestUserCard?.name || 'No card',
+          recommendedCard: bestOverallCard.name,
+          currentRate: userRate,
+          recommendedRate: optimalRate,
+          monthlyGain: Math.round(monthlyGain),
+          spending: amount
+        });
+      }
+    });
+
+    return opportunities.sort((a, b) => b.monthlyGain - a.monthlyGain).slice(0, 3);
+  };
+
+  const rewardsData = calculateRewards();
+  const opportunities = getOptimizationOpportunities();
+  const totalSpending = Object.values(spendingData).reduce((sum, amount) => sum + amount, 0);
 
   return (
     <div className="page-container">
@@ -34,7 +177,51 @@ const Analytics: React.FC = () => {
             <option value="year">This Year</option>
           </select>
         </div>
+        
+        <button 
+          onClick={() => setShowSpendingForm(true)}
+          className="btn-primary"
+        >
+          Update Spending Data
+        </button>
       </div>
+
+      {showSpendingForm && (
+        <div className="card spending-form">
+          <h3>Monthly Spending by Category</h3>
+          <div className="form-grid">
+            {Object.entries(spendingData).map(([category, amount]) => (
+              <div key={category} className="form-group">
+                <label>{category.charAt(0).toUpperCase() + category.slice(1)}:</label>
+                <input
+                  type="number"
+                  value={amount}
+                  onChange={(e) => setSpendingData({
+                    ...spendingData,
+                    [category]: parseInt(e.target.value) || 0
+                  })}
+                  placeholder="$0"
+                  className="form-input"
+                />
+              </div>
+            ))}
+          </div>
+          <div className="form-actions">
+            <button 
+              onClick={() => updateSpendingData(spendingData)}
+              className="btn-primary"
+            >
+              Save Spending Data
+            </button>
+            <button 
+              onClick={() => setShowSpendingForm(false)}
+              className="btn-secondary"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="analytics-grid">
         <div className="card analytics-card">
@@ -53,6 +240,12 @@ const Analytics: React.FC = () => {
               <span className="stat-label">Missed Points</span>
             </div>
           </div>
+          <div className="efficiency-score">
+            <span className="score-label">Efficiency Score:</span>
+            <span className="score-value">
+              {rewardsData.potential > 0 ? Math.round((rewardsData.earned / rewardsData.potential) * 100) : 0}%
+            </span>
+          </div>
         </div>
 
         <div className="card analytics-card">
@@ -63,61 +256,68 @@ const Analytics: React.FC = () => {
                 <div className="spending-bar">
                   <div 
                     className="spending-fill" 
-                    style={{ width: `${(amount / Math.max(...Object.values(spendingData))) * 100}%` }}
+                    style={{ width: totalSpending > 0 ? `${(amount / totalSpending) * 100}%` : '0%' }}
                   />
                 </div>
                 <div className="spending-details">
                   <span className="category-name">{category}</span>
                   <span className="spending-amount">${amount}</span>
+                  <span className="spending-percentage">
+                    {totalSpending > 0 ? Math.round((amount / totalSpending) * 100) : 0}%
+                  </span>
                 </div>
               </div>
             ))}
+          </div>
+          <div className="total-spending">
+            <strong>Total Monthly Spending: ${totalSpending}</strong>
           </div>
         </div>
 
         <div className="card analytics-card">
           <h3>🎯 Optimization Opportunities</h3>
           <div className="opportunities-list">
-            <div className="opportunity-item">
-              <span className="opportunity-icon">💡</span>
-              <div className="opportunity-text">
-                <strong>Switch grocery spending</strong>
-                <p>Use Amex Gold for groceries to earn 4x instead of 1x</p>
-                <span className="potential-gain">+255 points/month</span>
+            {opportunities.length > 0 ? opportunities.map((opp, index) => (
+              <div key={index} className="opportunity-item">
+                <span className="opportunity-icon">💡</span>
+                <div className="opportunity-text">
+                  <strong>Optimize {opp.category} spending</strong>
+                  <p>Switch from {opp.currentCard} ({opp.currentRate}x) to {opp.recommendedCard} ({opp.recommendedRate}x)</p>
+                  <span className="potential-gain">+{opp.monthlyGain} points/month</span>
+                </div>
               </div>
-            </div>
-            <div className="opportunity-item">
-              <span className="opportunity-icon">🔄</span>
-              <div className="opportunity-text">
-                <strong>Activate rotating category</strong>
-                <p>Chase Freedom Flex 5% on PayPal purchases</p>
-                <span className="potential-gain">+180 points/quarter</span>
+            )) : (
+              <div className="no-opportunities">
+                <p>Great job! You're already optimizing your rewards.</p>
+                <p>Update your spending data to see personalized recommendations.</p>
               </div>
-            </div>
-            <div className="opportunity-item">
-              <span className="opportunity-icon">✈️</span>
-              <div className="opportunity-text">
-                <strong>Travel card for flights</strong>
-                <p>Use travel card for better earning rates</p>
-                <span className="potential-gain">+96 points/month</span>
-              </div>
-            </div>
+            )}
           </div>
         </div>
 
         <div className="card analytics-card">
           <h3>📅 Monthly Trends</h3>
-          <div className="placeholder-chart">
-            <p>Interactive spending and rewards charts would be displayed here</p>
+          <div className="trends-chart">
             <div className="chart-placeholder">
               <div className="chart-bars">
-                <div className="chart-bar" style={{ height: '60%' }}></div>
-                <div className="chart-bar" style={{ height: '80%' }}></div>
-                <div className="chart-bar" style={{ height: '45%' }}></div>
-                <div className="chart-bar" style={{ height: '90%' }}></div>
-                <div className="chart-bar" style={{ height: '70%' }}></div>
+                <div className="chart-bar" style={{ height: '60%' }}>
+                  <span className="bar-label">Jan</span>
+                </div>
+                <div className="chart-bar" style={{ height: '80%' }}>
+                  <span className="bar-label">Feb</span>
+                </div>
+                <div className="chart-bar" style={{ height: '45%' }}>
+                  <span className="bar-label">Mar</span>
+                </div>
+                <div className="chart-bar" style={{ height: '90%' }}>
+                  <span className="bar-label">Apr</span>
+                </div>
+                <div className="chart-bar" style={{ height: '70%' }}>
+                  <span className="bar-label">May</span>
+                </div>
               </div>
             </div>
+            <p className="chart-note">Historical spending trends (demo data)</p>
           </div>
         </div>
       </div>
