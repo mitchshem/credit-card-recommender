@@ -1,19 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import cardsData from '../data/cards.json';
-import merchantsData from '../data/merchants.json';
+import { cardsData, DetailedCard } from '../data/cards';
+import { merchantsData } from '../data/merchants';
 import SearchableDropdown from './SearchableDropdown';
 import UserAccount from './UserAccount';
 
-interface DetailedCard {
-  id: string;
-  name: string;
-  network: string;
-  annual_fee: number;
-  reward_rates: {
-    [category: string]: number;
-  };
-  perks: string[];
-}
+
 
 interface WalletCard extends DetailedCard {
   isSelected: boolean;
@@ -49,7 +40,7 @@ const MerchantSearch: React.FC = () => {
   const [walletCards, setWalletCards] = useState<WalletCard[]>([]);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
-  const jsonCards: DetailedCard[] = cardsData as unknown as DetailedCard[];
+  const jsonCards: DetailedCard[] = cardsData;
   const merchantsMapping: { [merchant: string]: string } = merchantsData;
 
   // Combine default merchants with user's custom merchants
@@ -103,9 +94,9 @@ const MerchantSearch: React.FC = () => {
 
   const selectedCards: DetailedCard[] = walletCards
     .filter((card) => card.isSelected)
-    .map((card) => ({ 
+    .map((card) => ({
       id: card.id,
-      name: card.name, 
+      name: card.name,
       network: card.network,
       annual_fee: card.annual_fee,
       reward_rates: card.reward_rates,
@@ -218,7 +209,7 @@ const MerchantSearch: React.FC = () => {
     // In a real app, you'd show a category selection dialog
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const category = 'other';
-    
+
     // This would be handled by the UserAccount component
     // For now, just show a message
     setAddCardMessage(`✅ "${merchantName}" added as custom merchant!`);
@@ -363,7 +354,7 @@ const MerchantSearch: React.FC = () => {
 
       <div style={{ backgroundColor: '#f8f9fa', border: '1px solid #dee2e6', borderRadius: '8px', padding: '20px', marginBottom: '30px' }}>
         <h3 style={{ margin: '0 0 15px 0', color: '#333' }}>Add Custom Card</h3>
-        
+
         <div style={{ marginBottom: '15px' }}>
           <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Select Card:</label>
           <SearchableDropdown
@@ -457,12 +448,12 @@ const MerchantSearch: React.FC = () => {
           <h3 style={{ marginBottom: '15px', color: '#333', fontSize: '18px' }}>
             Recommendations for {merchantName}:
           </h3>
-          
+
           <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
             {recommendations.map((card) => {
               const category = allMerchants[merchantName.trim()];
               const reward = card.reward_rates[category];
-              
+
               return (
                 <li
                   key={card.id}

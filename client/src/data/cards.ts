@@ -1,0 +1,79 @@
+export interface DetailedCard {
+  id: string;
+  name: string;
+  network: string;
+  annual_fee: number;
+  reward_rates: {
+    [category: string]: number;
+  };
+  perks: string[];
+}
+
+export const cardsData: DetailedCard[] = [
+  {
+    "id": "amex_gold",
+    "name": "American Express® Gold Card",
+    "network": "American Express",
+    "annual_fee": 250,
+    "reward_rates": {
+      "dining": 4,
+      "groceries": 4,
+      "flights": 3,
+      "other": 1
+    },
+    "perks": [
+      "Up to $120 dining credit (Grubhub, Seamless, Cheesecake Factory, etc.)",
+      "No foreign transaction fees"
+    ]
+  },
+  {
+    "id": "chase_sapphire_preferred",
+    "name": "Chase Sapphire Preferred® Card",
+    "network": "Visa",
+    "annual_fee": 95,
+    "reward_rates": {
+      "travel": 2,
+      "dining": 2,
+      "online_grocery": 1,
+      "other": 1
+    },
+    "perks": [
+      "Primary rental car insurance",
+      "25% more value redeeming through Chase Travel"
+    ]
+  },
+  {
+    "id": "capital_one_venture_x",
+    "name": "Capital One Venture X Rewards Credit Card",
+    "network": "Visa",
+    "annual_fee": 395,
+    "reward_rates": {
+      "flights": 5,
+      "hotels": 10,
+      "other": 2
+    },
+    "perks": [
+      "Up to $300 annual travel credit (Capital One Travel)",
+      "10,000 bonus miles every anniversary",
+      "Priority Pass & Capital One lounge access"
+    ]
+  },
+  {
+    "id": "citi_premier",
+    "name": "Citi Premier® Card",
+    "network": "Mastercard",
+    "annual_fee": 95,
+    "reward_rates": {
+      "dining": 3,
+      "groceries": 3,
+      "gas": 3,
+      "airfare": 3,
+      "hotels": 3,
+      "other": 1
+    },
+    "perks": [
+      "Transfer points to 15+ airline partners",
+      "No foreign transaction fees"
+    ]
+  }
+];
