@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 const Account: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [userProfile, setUserProfile] = useState({
     name: 'John Doe',
     email: 'john.doe@example.com',
