@@ -1,0 +1,373 @@
+const fs = require('fs').promises;
+const path = require('path');
+
+/**
+ * Enhanced Card Database Generator
+ * Creates comprehensive card data with structured fields
+ */
+class EnhancedCardDatabase {
+  constructor() {
+    this.cards = [];
+    this.baseCards = this.getBaseCards();
+  }
+
+  getBaseCards() {
+    return [
+      {
+        id: 'chase_sapphire_preferred',
+        name: 'Chase Sapphire Preferred',
+        network: 'Visa',
+        issuer: 'Chase',
+        annual_fee: 95,
+        reward_rates: {
+          travel: 5,
+          dining: 2,
+          other: 1
+        },
+        signup_bonus: {
+          points: 60000,
+          spend_required: 4000,
+          months: 3,
+          value: 750
+        },
+        perks: [
+          '60,000 bonus points after $4,000 spend',
+          '5x points on travel purchased through Chase Ultimate Rewards',
+          '2x points on dining',
+          '1.25x redemption value toward travel',
+          'Trip cancellation/interruption insurance',
+          'Baggage delay insurance',
+          'Primary car rental insurance'
+        ],
+        benefits: {
+          travel_insurance: true,
+          rental_car_insurance: true,
+          trip_cancellation: true,
+          baggage_delay: true,
+          purchase_protection: true,
+          extended_warranty: true
+        },
+        fees: {
+          foreign_transaction: 0,
+          cash_advance: 5,
+          late_payment: 40,
+          over_limit: 0
+        },
+        redemption: {
+          options: ['travel', 'cash_back', 'gift_cards', 'transfers'],
+          best_value: 'travel_transfers',
+          transfer_partners: ['United', 'Hyatt', 'Southwest', 'British Airways']
+        },
+        categories: ['travel', 'dining'],
+        credit_score_required: 'good',
+        recommended_for: ['Travel enthusiasts', 'Dining lovers', 'Flexible travelers']
+      },
+      {
+        id: 'amex_gold',
+        name: 'American Express Gold Card',
+        network: 'American Express',
+        issuer: 'American Express',
+        annual_fee: 250,
+        reward_rates: {
+          dining: 4,
+          groceries: 4,
+          flights: 3,
+          other: 1
+        },
+        signup_bonus: {
+          points: 60000,
+          spend_required: 4000,
+          months: 6,
+          value: 600
+        },
+        perks: [
+          '60,000 Membership Rewards points after $4,000 spend in 6 months',
+          '4x points at restaurants worldwide',
+          '4x points at U.S. supermarkets (up to $25,000 per year)',
+          '3x points on flights booked directly with airlines',
+          '$10 monthly dining credit',
+          '$10 monthly Uber Cash credit',
+          'Car rental loss and damage insurance',
+          'No foreign transaction fees'
+        ],
+        benefits: {
+          travel_insurance: true,
+          rental_car_insurance: true,
+          purchase_protection: true,
+          extended_warranty: true,
+          return_protection: true
+        },
+        fees: {
+          foreign_transaction: 0,
+          cash_advance: 5,
+          late_payment: 39,
+          over_limit: 0
+        },
+        redemption: {
+          options: ['travel', 'cash_back', 'gift_cards', 'transfers', 'amazon'],
+          best_value: 'travel_transfers',
+          transfer_partners: ['Delta', 'British Airways', 'Hilton', 'Marriott']
+        },
+        categories: ['dining', 'groceries', 'travel'],
+        credit_score_required: 'good',
+        recommended_for: ['Food lovers', 'Grocery shoppers', 'Frequent travelers']
+      },
+      {
+        id: 'capital_one_venture',
+        name: 'Capital One Venture Rewards',
+        network: 'Mastercard',
+        issuer: 'Capital One',
+        annual_fee: 95,
+        reward_rates: {
+          all_purchases: 2
+        },
+        signup_bonus: {
+          miles: 75000,
+          spend_required: 4000,
+          months: 3,
+          value: 750
+        },
+        perks: [
+          '75,000 bonus miles after $4,000 spend in 3 months',
+          'Unlimited 2x miles on every purchase',
+          '10x miles on Capital One Travel',
+          'No blackout dates',
+          'Transfer miles to 15+ travel loyalty programs',
+          'Concierge service',
+          'Travel accident insurance'
+        ],
+        benefits: {
+          travel_insurance: true,
+          purchase_protection: true,
+          extended_warranty: true
+        },
+        fees: {
+          foreign_transaction: 0,
+          cash_advance: 3,
+          late_payment: 40,
+          over_limit: 0
+        },
+        redemption: {
+          options: ['travel', 'cash_back', 'transfers'],
+          best_value: 'travel_transfers',
+          transfer_partners: ['Avianca', 'Accor', 'All Nippon Airways']
+        },
+        categories: ['travel', 'all_purpose'],
+        credit_score_required: 'good',
+        recommended_for: ['All-purpose travelers', 'Simple earners', 'Flexible redeemers']
+      },
+      {
+        id: 'chase_freedom_unlimited',
+        name: 'Chase Freedom Unlimited',
+        network: 'Mastercard',
+        issuer: 'Chase',
+        annual_fee: 0,
+        reward_rates: {
+          dining: 3,
+          drugstores: 3,
+          other: 1.5
+        },
+        signup_bonus: {
+          points: 20000,
+          spend_required: 500,
+          months: 3,
+          value: 300
+        },
+        perks: [
+          '20,000 bonus points after $500 spend in 3 months',
+          '5% cash back on travel purchased through Chase',
+          '3% cash back on dining and drugstores',
+          '1.5% cash back on all other purchases',
+          'Intro 0% APR for 15 months',
+          'Can transfer points to Sapphire cards'
+        ],
+        benefits: {
+          purchase_protection: true,
+          extended_warranty: true
+        },
+        fees: {
+          foreign_transaction: 3,
+          cash_advance: 5,
+          late_payment: 40,
+          over_limit: 0
+        },
+        redemption: {
+          options: ['cash_back', 'gift_cards', 'travel', 'transfers'],
+          best_value: 'transfers_via_sapphire'
+        },
+        categories: ['cash_back', 'dining', 'all_purpose'],
+        credit_score_required: 'good',
+        recommended_for: ['Everyday spenders', 'Cash back seekers', 'Chase ecosystem members']
+      },
+      {
+        id: 'citi_double_cash',
+        name: 'Citi Double Cash Card',
+        network: 'Mastercard',
+        issuer: 'Citi',
+        annual_fee: 0,
+        reward_rates: {
+          all_purchases: 2
+        },
+        signup_bonus: {
+          points: 200,
+          spend_required: 500,
+          months: 3,
+          value: 200
+        },
+        perks: [
+          '$200 bonus after $1,500 spend in 6 months',
+          '2% cash back - 1% when you buy, 1% when you pay',
+          'No categories to track',
+          'Intro 0% APR for 18 months',
+          'Citi Entertainment access'
+        ],
+        benefits: {
+          purchase_protection: true,
+          extended_warranty: true
+        },
+        fees: {
+          foreign_transaction: 3,
+          cash_advance: 5,
+          late_payment: 40,
+          over_limit: 0
+        },
+        redemption: {
+          options: ['cash_back', 'statement_credit', 'check'],
+          best_value: 'cash_back'
+        },
+        categories: ['cash_back', 'all_purpose'],
+        credit_score_required: 'good',
+        recommended_for: ['Simple spenders', 'Cash back lovers', 'No-hassle earners']
+      }
+    ];
+  }
+
+  async expandDatabase() {
+    console.log('🔄 Expanding credit card database...');
+    
+    // Add variations and similar cards
+    this.addSimilarCards();
+    
+    // Sort and save
+    this.cards = this.cards.sort((a, b) => a.name.localeCompare(b.name));
+    
+    console.log(`✅ Database expanded to ${this.cards.length} cards`);
+    return this.cards;
+  }
+
+  addSimilarCards() {
+    // Add the base cards
+    this.cards.push(...this.baseCards);
+    
+    // Add premium variants
+    this.cards.push({
+      ...this.baseCards[0],
+      id: 'chase_sapphire_reserve',
+      name: 'Chase Sapphire Reserve',
+      annual_fee: 550,
+      reward_rates: {
+        travel: 10,
+        dining: 10,
+        other: 1
+      },
+      signup_bonus: {
+        points: 50000,
+        spend_required: 4000,
+        months: 3,
+        value: 750
+      },
+      perks: [
+        ...this.baseCards[0].perks,
+        '$300 annual travel credit',
+        'Priority Pass Select membership',
+        'Global Entry/TSA PreCheck credit',
+        '1.5x redemption value toward travel'
+      ],
+      recommended_for: ['Premium travelers', 'Frequent flyers', 'Lounge enthusiasts']
+    });
+    
+    // Add more cards (examples)
+    const additionalCards = [
+      {
+        id: 'amex_platinum',
+        name: 'The Platinum Card from American Express',
+        network: 'American Express',
+        issuer: 'American Express',
+        annual_fee: 695,
+        reward_rates: {
+          flights: 5,
+          hotels: 5,
+          other: 1
+        },
+        signup_bonus: {
+          points: 80000,
+          spend_required: 6000,
+          months: 6,
+          value: 800
+        },
+        perks: [
+          '80,000 Membership Rewards points after $6,000 spend',
+          '5x points on flights booked directly or with Amex Travel',
+          '5x points on prepaid hotels booked through Amex Travel',
+          '$200 annual airline fee credit',
+          '$200 annual Uber Cash credit',
+          '$240 annual digital entertainment credit',
+          'Clear Plus membership credit',
+          'Global Entry/TSA PreCheck credit',
+          'Priority Pass Select membership',
+          'Equinox membership credit'
+        ],
+        benefits: {
+          travel_insurance: true,
+          concierge_service: true,
+          airport_lounge_access: true
+        },
+        fees: {
+          foreign_transaction: 0
+        },
+        redemption: {
+          options: ['travel', 'transfers', 'gift_cards'],
+          transfer_partners: ['Delta', 'Marriott', 'Hilton', 'Virgin Atlantic']
+        },
+        categories: ['travel', 'luxury'],
+        credit_score_required: 'excellent',
+        recommended_for: ['Luxury travelers', 'Frequent flyers', 'Premium consumers']
+      }
+    ];
+    
+    this.cards.push(...additionalCards);
+  }
+
+  async saveToJSON(outputPath) {
+    const fullPath = path.resolve(__dirname, outputPath);
+    const dir = path.dirname(fullPath);
+    
+    // Create directory if it doesn't exist
+    try {
+      await fs.mkdir(dir, { recursive: true });
+    } catch (err) {
+      // Directory might already exist, that's ok
+    }
+    
+    // Write JSON file
+    await fs.writeFile(fullPath, JSON.stringify(this.cards, null, 2));
+    console.log(`💾 Saved ${this.cards.length} cards to ${fullPath}`);
+    return fullPath;
+  }
+}
+
+if (require.main === module) {
+  const generator = new EnhancedCardDatabase();
+  generator.expandDatabase()
+    .then(() => generator.saveToJSON('../client/src/data/cards.json'))
+    .then(() => {
+      console.log('✅ Enhanced card database created successfully!');
+      process.exit(0);
+    })
+    .catch(err => {
+      console.error('❌ Error:', err);
+      process.exit(1);
+    });
+}
+
+module.exports = EnhancedCardDatabase;
