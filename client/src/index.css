@@ -983,12 +983,12 @@ body {
 
 .quiz-option {
   padding: var(--space-lg) var(--space-xl);
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid var(--glass-border);
+  border: 1px solid var(--primary-200);
   border-radius: var(--radius-xl);
-  color: white;
+  color: var(--primary-800);
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-size: 1.1rem;
@@ -996,6 +996,7 @@ body {
   text-align: left;
   position: relative;
   overflow: hidden;
+  box-shadow: var(--shadow-md);
 }
 
 .quiz-option::before {
@@ -1005,16 +1006,16 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  background: linear-gradient(135deg, var(--primary-100) 0%, var(--primary-50) 100%);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
 
 .quiz-option:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.95);
   transform: translateY(-2px) scale(1.02);
   box-shadow: var(--shadow-lg);
-  border-color: rgba(255, 255, 255, 0.3);
+  border-color: var(--primary-300);
 }
 
 .quiz-option:hover::before {
@@ -1022,10 +1023,11 @@ body {
 }
 
 .quiz-option.selected {
-  background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
-  border-color: var(--primary-400);
+  background: linear-gradient(135deg, var(--accent-500) 0%, var(--accent-600) 100%);
+  border-color: var(--accent-500);
   box-shadow: var(--shadow-xl);
   transform: translateY(-2px) scale(1.02);
+  color: white;
 }
 
 .quiz-results {
