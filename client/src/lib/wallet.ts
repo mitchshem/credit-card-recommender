@@ -108,21 +108,25 @@ export function saveWalletState(state: WalletState): void {
  * Get full wallet cards (including custom cards)
  */
 export function getWalletCards(allCards: Card[]): WalletCard[] {
+  if (!allCards || !Array.isArray(allCards)) {
+    return [];
+  }
+  
   const state = loadWalletState();
   const cards = new Map(allCards.map(card => [card.id, card]));
   
   // Add standard cards
-  const walletCards = state.cardIds
+  const walletCards = (state.cardIds || [])
     .map(id => cards.get(id))
     .filter((card): card is Card => card !== undefined)
     .map(card => ({
       ...card,
-      isSelected: state.selectedIds.includes(card.id),
+      isSelected: (state.selectedIds || []).includes(card.id),
       isUserAdded: false
     }));
   
   // Add custom cards
-  const customCards = state.customCards.map(card => ({
+  const customCards = (state.customCards || []).map(card => ({
     ...card,
     isUserAdded: true
   }));
@@ -134,11 +138,15 @@ export function getWalletCards(allCards: Card[]): WalletCard[] {
  * Get selected cards only
  */
 export function getSelectedCards(allCards: Card[]): Card[] {
+  if (!allCards || !Array.isArray(allCards)) {
+    return [];
+  }
+  
   const state = loadWalletState();
-  const selectedIdSet = new Set(state.selectedIds);
+  const selectedIdSet = new Set(state.selectedIds || []);
   const cards = new Map(allCards.map(card => [card.id, card]));
   
-  return state.cardIds
+  return (state.cardIds || [])
     .filter(id => selectedIdSet.has(id))
     .map(id => cards.get(id))
     .filter((card): card is Card => card !== undefined);
