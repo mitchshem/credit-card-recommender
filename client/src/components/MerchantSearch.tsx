@@ -114,7 +114,8 @@ const MerchantSearch: React.FC = () => {
       return;
     }
 
-    const cardExists = walletCards.some((card) => card.id === selectedCardId);
+    const currentWalletCards = getWalletCards(jsonCards);
+    const cardExists = currentWalletCards.some((card) => card.id === selectedCardId);
     if (cardExists) {
       setAddCardMessage('This card is already in your wallet');
       return;
@@ -159,7 +160,8 @@ const MerchantSearch: React.FC = () => {
   };
 
   const handleSelectAll = () => {
-    const allSelected = walletCards.every((card) => card.isSelected);
+    const currentWalletCards = getWalletCards(jsonCards);
+    const allSelected = currentWalletCards.every((card) => card.isSelected);
     toggleAllCards(!allSelected);
     // Reload wallet cards to reflect changes
     const updatedWalletCards = getWalletCards(jsonCards);
