@@ -1,18 +1,7 @@
 import React, { useState } from 'react';
 import MerchantSearch from '../components/MerchantSearch';
-import cardsData from '../data/cards.json';
-
-interface Card {
-  id: string;
-  name: string;
-  network: string;
-  annual_fee: number;
-  reward_rates: { [category: string]: number };
-  perks: string[];
-  source?: string;
-  category?: string;
-  signup_bonus?: string;
-}
+import { cardsData } from '../data';
+import { Card } from '../types/data';
 
 const SmartMatch: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(0);
@@ -88,8 +77,7 @@ const SmartMatch: React.FC = () => {
   };
 
   const getRecommendations = (): Card[] => {
-    const cards = cardsData as unknown as Card[];
-    const scoredCards = cards.map(card => ({
+    const scoredCards = cardsData.map(card => ({
       ...card,
       score: scoreCard(card)
     }));
