@@ -196,8 +196,8 @@ const MerchantSearch: React.FC = () => {
   // Wallet cards are automatically saved by the wallet adapter functions
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif', maxWidth: '600px', margin: '0 auto' }}>
-      <h2 style={{ marginBottom: '20px', color: '#333', textAlign: 'center' }}>
+    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif', maxWidth: '1200px', margin: '0 auto' }}>
+      <h2 style={{ marginBottom: '20px', color: 'var(--primary-800)', textAlign: 'center' }}>
         Credit Card Rewards Optimizer
       </h2>
 
@@ -226,9 +226,9 @@ const MerchantSearch: React.FC = () => {
       </div>
 
       {showWallet && (
-        <div style={{ backgroundColor: '#f8f9fa', border: '1px solid #dee2e6', borderRadius: '8px', padding: '20px', marginBottom: '30px' }}>
+        <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', border: '1px solid var(--primary-200)', borderRadius: '8px', padding: '20px', marginBottom: '30px', backdropFilter: 'blur(20px)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-            <h3 style={{ margin: 0, color: '#333' }}>
+            <h3 style={{ margin: 0, color: 'var(--primary-800)' }}>
               💳 My Wallet ({walletCards.length} cards, {walletCards.filter((card) => card.isSelected).length} selected)
             </h3>
             {walletCards.length > 0 && (
@@ -251,9 +251,9 @@ const MerchantSearch: React.FC = () => {
           </div>
 
           {walletCards.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '40px 20px', color: '#6c757d', backgroundColor: 'white', borderRadius: '8px', border: '2px dashed #dee2e6' }}>
+            <div style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--primary-600)', backgroundColor: 'rgba(255, 255, 255, 0.6)', borderRadius: '8px', border: '2px dashed var(--primary-300)' }}>
               <div style={{ fontSize: '48px', marginBottom: '15px' }}>💳</div>
-              <h4 style={{ margin: '0 0 10px 0', color: '#495057' }}>Your wallet is empty</h4>
+              <h4 style={{ margin: '0 0 10px 0', color: 'var(--primary-700)' }}>Your wallet is empty</h4>
               <p style={{ margin: 0, fontSize: '14px' }}>Add cards below to start getting recommendations</p>
             </div>
           ) : (
