@@ -1,27 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { cardsData, DetailedCard } from '../data/cards';
-import { merchantsData } from '../data/merchants';
+import { cardsData, merchantsData, Card } from '../data';
+import { WalletCard, User } from '../types/data';
+import { 
+  getWalletCards, 
+  getSelectedCards, 
+  toggleCardSelection, 
+  removeCardFromWallet,
+  addCardToWallet,
+  toggleAllCards
+} from '../lib/wallet';
+import { getRecommendations } from '../lib/recommendations';
 import SearchableDropdown from './SearchableDropdown';
 import UserAccount from './UserAccount';
-
-
-
-interface WalletCard extends DetailedCard {
-  isSelected: boolean;
-  isUserAdded: boolean;
-}
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  customMerchants: { [merchant: string]: string };
-  customCards: any[];
-  preferences: {
-    defaultWalletCards: string[];
-    favoriteMerchants: string[];
-  };
-}
 
 const MerchantSearch: React.FC = () => {
   const [merchantName, setMerchantName] = useState<string>('');
@@ -40,7 +30,7 @@ const MerchantSearch: React.FC = () => {
   const [walletCards, setWalletCards] = useState<WalletCard[]>([]);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
-  const jsonCards: DetailedCard[] = cardsData;
+  const jsonCards: Card[] = cardsData;
   const merchantsMapping: { [merchant: string]: string } = merchantsData;
 
   // Combine default merchants with user's custom merchants
@@ -69,39 +59,14 @@ const MerchantSearch: React.FC = () => {
 
   useEffect(() => {
     const loadWalletCards = () => {
-      const initialWalletCards: WalletCard[] = jsonCards.map((card) => ({
-        ...card,
-        isSelected: true,
-        isUserAdded: false,
-      }));
-
-      try {
-        const savedCards = localStorage.getItem('walletCards');
-        if (savedCards) {
-          const parsedCards = JSON.parse(savedCards);
-          setWalletCards(parsedCards);
-        } else {
-          setWalletCards(initialWalletCards);
-        }
-      } catch (error) {
-        console.error('Error loading wallet cards:', error);
-        setWalletCards(initialWalletCards);
-      }
+      const walletCards = getWalletCards(jsonCards);
+      setWalletCards(walletCards);
     };
 
     loadWalletCards();
   }, [jsonCards]);
 
-  const selectedCards: DetailedCard[] = walletCards
-    .filter((card) => card.isSelected)
-    .map((card) => ({
-      id: card.id,
-      name: card.name,
-      network: card.network,
-      annual_fee: card.annual_fee,
-      reward_rates: card.reward_rates,
-      perks: card.perks
-    }));
+  const selectedCards = getSelectedCards(jsonCards);
 
   const handleFindBestCard = () => {
     if (!merchantName.trim()) {
@@ -115,14 +80,14 @@ const MerchantSearch: React.FC = () => {
       return;
     }
 
-    const matchingCards = selectedCards
-      .filter((card) => card.reward_rates[category] > 0)
-      .sort((a, b) => b.reward_rates[category] - a.reward_rates[category]);
-
-    const matchingWalletCards: WalletCard[] = matchingCards.map((card) => {
-      const walletCard = walletCards.find((wc) => wc.id === card.id);
+    // Use the new recommendations engine with taxonomy support
+    const recs = getRecommendations(category, jsonCards, selectedCards);
+    
+    // Map recommendations back to WalletCard format
+    const matchingWalletCards: WalletCard[] = recs.map((rec) => {
+      const walletCard = walletCards.find((wc) => wc.id === rec.card.id);
       return walletCard || {
-        ...card,
+        ...rec.card,
         isSelected: true,
         isUserAdded: false,
       };
@@ -162,7 +127,10 @@ const MerchantSearch: React.FC = () => {
       isUserAdded: true,
     };
 
-    setWalletCards((prev) => [...prev, newWalletCard]);
+    addCardToWallet(newWalletCard);
+    // Reload wallet cards to reflect changes
+    const updatedWalletCards = getWalletCards(jsonCards);
+    setWalletCards(updatedWalletCards);
     setSelectedCardId('');
     setNewCardRewards({
       groceries: 0,
@@ -177,18 +145,25 @@ const MerchantSearch: React.FC = () => {
   };
 
   const handleCardToggle = (cardId: string) => {
-    setWalletCards((prev) =>
-      prev.map((card) => (card.id === cardId ? { ...card, isSelected: !card.isSelected } : card)),
-    );
+    toggleCardSelection(cardId);
+    // Reload wallet cards to reflect changes
+    const updatedWalletCards = getWalletCards(jsonCards);
+    setWalletCards(updatedWalletCards);
   };
 
   const handleRemoveCard = (cardId: string) => {
-    setWalletCards((prev) => prev.filter((card) => card.id !== cardId));
+    removeCardFromWallet(cardId);
+    // Reload wallet cards to reflect changes
+    const updatedWalletCards = getWalletCards(jsonCards);
+    setWalletCards(updatedWalletCards);
   };
 
   const handleSelectAll = () => {
     const allSelected = walletCards.every((card) => card.isSelected);
-    setWalletCards((prev) => prev.map((card) => ({ ...card, isSelected: !allSelected })));
+    toggleAllCards(!allSelected);
+    // Reload wallet cards to reflect changes
+    const updatedWalletCards = getWalletCards(jsonCards);
+    setWalletCards(updatedWalletCards);
   };
 
   const handleRewardChange = (category: string, value: string) => {
@@ -216,10 +191,7 @@ const MerchantSearch: React.FC = () => {
     setTimeout(() => setAddCardMessage(''), 3000);
   };
 
-  // Save wallet cards to localStorage whenever they change
-  useEffect(() => {
-    localStorage.setItem('walletCards', JSON.stringify(walletCards));
-  }, [walletCards]);
+  // Wallet cards are automatically saved by the wallet adapter functions
 
   return (
     <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif', maxWidth: '600px', margin: '0 auto' }}>

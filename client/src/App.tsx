@@ -1,5 +1,4 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import React, { useState } from 'react';
 import Layout from './components/Layout';
 import Home from './pages/Home';
 import Wallet from './pages/Wallet';
@@ -13,25 +12,32 @@ import UpgradeGuide from './pages/UpgradeGuide';
 import Learn from './pages/Learn';
 import Account from './pages/Account';
 
+type Page = 'home' | 'wallet' | 'explore' | 'smart-match' | 'goals' | 'points-converter' | 'rotating-categories' | 'analytics' | 'upgrade-guide' | 'learn' | 'account';
+
 function App() {
+  const [currentPage, setCurrentPage] = useState<Page>('home');
+
+  const renderPage = () => {
+    switch (currentPage) {
+      case 'home': return <Home />;
+      case 'wallet': return <Wallet />;
+      case 'explore': return <ExploreCards />;
+      case 'smart-match': return <SmartMatch />;
+      case 'goals': return <Goals />;
+      case 'points-converter': return <PointsConverter />;
+      case 'rotating-categories': return <RotatingCategories />;
+      case 'analytics': return <Analytics />;
+      case 'upgrade-guide': return <UpgradeGuide />;
+      case 'learn': return <Learn />;
+      case 'account': return <Account />;
+      default: return <Home />;
+    }
+  };
+
   return (
-    <BrowserRouter>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/wallet" element={<Wallet />} />
-          <Route path="/explore" element={<ExploreCards />} />
-          <Route path="/smart-match" element={<SmartMatch />} />
-          <Route path="/goals" element={<Goals />} />
-          <Route path="/points-converter" element={<PointsConverter />} />
-          <Route path="/rotating-categories" element={<RotatingCategories />} />
-          <Route path="/analytics" element={<Analytics />} />
-          <Route path="/upgrade-guide" element={<UpgradeGuide />} />
-          <Route path="/learn" element={<Learn />} />
-          <Route path="/account" element={<Account />} />
-        </Routes>
-      </Layout>
-    </BrowserRouter>
+    <Layout currentPage={currentPage} setCurrentPage={setCurrentPage}>
+      {renderPage()}
+    </Layout>
   );
 }
 
