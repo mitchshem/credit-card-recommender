@@ -52,6 +52,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     }
   };
 
+  // Apple Sign-In handler - commented out until Apple Developer account is configured
+  /*
   const handleAppleLogin = async () => {
     setError('');
     setLoading(true);
@@ -64,6 +66,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
       setLoading(false);
     }
   };
+  */
 
   if (!isOpen) return null;
 
@@ -92,6 +95,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             {isLogin ? 'Sign in with Google' : 'Sign up with Google'}
           </button>
 
+          {/* Apple Sign-In hidden until configured with Apple Developer account */}
+          {/* 
           <button 
             className="auth-social-btn apple-btn" 
             onClick={handleAppleLogin}
@@ -102,6 +107,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             </svg>
             {isLogin ? 'Sign in with Apple' : 'Sign up with Apple'}
           </button>
+          */}
         </div>
 
         <div className="auth-modal-divider">
