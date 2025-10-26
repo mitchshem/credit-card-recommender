@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import AuthModal from './AuthModal';
 
 type Page = 'home' | 'wallet' | 'explore' | 'smart-match' | 'goals' | 'points-converter' | 'rotating-categories' | 'analytics' | 'upgrade-guide' | 'learn' | 'account';
 
@@ -9,10 +11,12 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ children, currentPage, setCurrentPage }) => {
+  const { currentUser, userProfile, logout } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showToolsMenu, setShowToolsMenu] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   const navigationItems = [
     { id: 'home', label: 'Home', icon: '🏠' },
@@ -72,14 +76,12 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, setCurrentPage }
     }
   };
 
-  const handleUserMenuAction = (actionId: string) => {
+  const handleUserMenuAction = async (actionId: string) => {
     if (actionId === 'account') {
       setCurrentPage('account');
     } else if (actionId === 'logout') {
-      // Handle logout logic
-      console.log('Logout clicked');
+      await logout();
     } else if (actionId === 'settings') {
-      // Handle settings logic
       console.log('Settings clicked');
     }
     setShowUserMenu(false);
@@ -149,35 +151,51 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, setCurrentPage }
               <h1 className="page-title">Credit Card Advisor</h1>
             </div>
             <div className="top-bar-right">
-              {/* User Menu Dropdown */}
-              <div className="user-menu-container">
-                <button
-                  className={`user-menu-trigger ${showUserMenu ? 'user-menu-open' : ''}`}
-                  onClick={() => setShowUserMenu(!showUserMenu)}
+              {currentUser ? (
+                /* User Menu Dropdown */
+                <div className="user-menu-container">
+                  <button
+                    className={`user-menu-trigger ${showUserMenu ? 'user-menu-open' : ''}`}
+                    onClick={() => setShowUserMenu(!showUserMenu)}
+                  >
+                    <div className="user-avatar">
+                      {currentUser.photoURL ? (
+                        <img src={currentUser.photoURL} alt="Profile" style={{ width: '100%', height: '100%', borderRadius: '50%' }} />
+                      ) : (
+                        <span className="avatar-icon">👤</span>
+                      )}
+                    </div>
+                    <span className="user-name">{userProfile?.displayName || currentUser.displayName || 'User'}</span>
+                    <span className="dropdown-arrow">{showUserMenu ? '▲' : '▼'}</span>
+                  </button>
+                  {showUserMenu && (
+                    <div className="user-menu-dropdown">
+                      {userMenuItems.map((item) => (
+                        <button
+                          key={item.id}
+                          className={`user-menu-item ${currentPage === item.id ? 'user-menu-item-active' : ''}`}
+                          onClick={() => handleUserMenuAction(item.id)}
+                        >
+                          <span className="user-menu-icon">{item.icon}</span>
+                          <span className="user-menu-label">{item.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                /* Sign In Button */
+                <button 
+                  className="user-menu-trigger"
+                  onClick={() => setShowAuthModal(true)}
+                  style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
                 >
-                  <div className="user-avatar">
-                    <span className="avatar-icon">👤</span>
-                  </div>
-                  <span className="user-name">Mitchell</span>
-                  <span className="dropdown-arrow">{showUserMenu ? '▲' : '▼'}</span>
+                  <span>Sign In</span>
                 </button>
-                {showUserMenu && (
-                  <div className="user-menu-dropdown">
-                    {userMenuItems.map((item) => (
-                      <button
-                        key={item.id}
-                        className={`user-menu-item ${currentPage === item.id ? 'user-menu-item-active' : ''}`}
-                        onClick={() => handleUserMenuAction(item.id)}
-                      >
-                        <span className="user-menu-icon">{item.icon}</span>
-                        <span className="user-menu-label">{item.label}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
+              )}
             </div>
           </div>
+
           {children}
         </div>
       </div>
@@ -185,6 +203,9 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, setCurrentPage }
       {isMobile && sidebarOpen && (
         <div className="sidebar-overlay" onClick={() => setSidebarOpen(false)} />
       )}
+
+      {/* Auth Modal */}
+      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
     </div>
   );
 };
