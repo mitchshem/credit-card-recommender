@@ -15,7 +15,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const { signup, login, loginWithGoogle, loginWithApple } = useAuth();
+  const { signup, login, loginWithGoogle /*, loginWithApple */ } = useAuth(); // loginWithApple commented out until Apple Developer setup
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

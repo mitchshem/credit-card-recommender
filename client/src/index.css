@@ -1926,3 +1926,222 @@ body {
   font-style: italic;
   margin-top: 20px;
 }
+
+/* Explore Cards Page */
+.explore-controls {
+  background: rgba(255, 255, 255, 0.8);
+  padding: var(--space-xl);
+  border-radius: var(--radius-2xl);
+  border: 1px solid var(--primary-200);
+  margin-bottom: var(--space-2xl);
+}
+
+.filter-sort-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-lg);
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.control-group label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--primary-700);
+}
+
+.control-group select {
+  padding: var(--space-md);
+  border: 1px solid var(--primary-200);
+  border-radius: var(--radius-lg);
+  font-size: 1rem;
+  color: var(--primary-800);
+  background: white;
+  transition: all 0.3s ease;
+}
+
+.control-group select:focus {
+  outline: none;
+  border-color: var(--accent-500);
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+}
+
+.cards-results {
+  margin-bottom: var(--space-lg);
+}
+
+.results-count {
+  color: var(--primary-600);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: var(--space-xl);
+}
+
+.explore-card {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid var(--primary-200);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-xl);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.explore-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--accent-300);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-sm);
+}
+
+.card-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary-800);
+  margin: 0;
+  flex: 1;
+}
+
+.card-network {
+  background: var(--primary-100);
+  color: var(--primary-700);
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.card-fee,
+.card-rewards {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-sm);
+  background: var(--primary-50);
+  border-radius: var(--radius-lg);
+}
+
+.fee-label,
+.rewards-label {
+  font-size: 0.875rem;
+  color: var(--primary-600);
+  font-weight: 500;
+}
+
+.fee-amount,
+.rewards-rate {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--primary-800);
+}
+
+.signup-bonus-card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  background: linear-gradient(135deg, var(--accent-50) 0%, var(--accent-100) 100%);
+  border: 2px solid var(--accent-200);
+  border-radius: var(--radius-xl);
+}
+
+.bonus-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.signup-bonus-card strong {
+  display: block;
+  color: var(--accent-800);
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.signup-bonus-card p {
+  margin: 0;
+  color: var(--accent-700);
+  font-size: 0.875rem;
+}
+
+.card-categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.category-badge {
+  background: var(--primary-100);
+  color: var(--primary-700);
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.card-perks {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.perk-item {
+  margin: 0;
+  color: var(--primary-700);
+  font-size: 0.875rem;
+}
+
+.more-perks {
+  margin: 0;
+  color: var(--primary-600);
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+.card-actions {
+  margin-top: auto;
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--primary-200);
+}
+
+.add-to-wallet {
+  width: 100%;
+}
+
+.no-results {
+  text-align: center;
+  padding: var(--space-3xl);
+  color: var(--primary-600);
+}
+
+.no-results h3 {
+  color: var(--primary-800);
+  margin-bottom: var(--space-sm);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-sort-controls {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,17 +1,6 @@
 import React, { useState } from 'react';
-import cardsData from '../data/cards.json';
-
-interface Card {
-  id: string;
-  name: string;
-  network: string;
-  annual_fee: number;
-  reward_rates: { [category: string]: number };
-  perks: string[];
-  source?: string;
-  category?: string;
-  signup_bonus?: string;
-}
+import { cardsData } from '../data';
+import { Card } from '../types/data';
 
 const ExploreCards: React.FC = () => {
   const [sortBy, setSortBy] = useState('name');
@@ -72,15 +61,14 @@ const ExploreCards: React.FC = () => {
     });
   };
 
-  const addToWallet = (cardId: string) => {
-    const walletCards = JSON.parse(localStorage.getItem('walletCards') || '[]');
-    if (!walletCards.includes(cardId)) {
-      walletCards.push(cardId);
-      localStorage.setItem('walletCards', JSON.stringify(walletCards));
-      alert('Card added to wallet!');
-    } else {
-      alert('Card is already in your wallet!');
-    }
+  const formatSignupBonus = (card: Card): string => {
+    if (!card.signup_bonus) return '';
+    
+    const amount = card.signup_bonus.points || card.signup_bonus.miles;
+    if (!amount) return '';
+    
+    const unit = card.signup_bonus.points ? 'points' : 'miles';
+    return `${amount.toLocaleString()} ${unit} after $${card.signup_bonus.spend_required.toLocaleString()} spend (worth ~$${card.signup_bonus.value})`;
   };
 
   const getHighestRewardCategory = (card: Card): string => {
@@ -166,6 +154,16 @@ const ExploreCards: React.FC = () => {
               <span className="rewards-rate">{getHighestRewardCategory(card)}</span>
             </div>
 
+            {card.signup_bonus && (
+              <div className="signup-bonus-card">
+                <span className="bonus-icon">🎁</span>
+                <div>
+                  <strong>Sign-up Bonus</strong>
+                  <p>{formatSignupBonus(card)}</p>
+                </div>
+              </div>
+            )}
+
             <div className="card-categories">
               {Object.entries(card.reward_rates).map(([category, rate]) => (
                 rate > 1 && (
@@ -177,24 +175,17 @@ const ExploreCards: React.FC = () => {
             </div>
 
             <div className="card-perks">
-              {card.perks.slice(0, 2).map((perk, index) => (
-                <p key={index} className="perk-item">• {perk}</p>
+              {card.perks.slice(0, 3).map((perk, index) => (
+                <p key={index} className="perk-item">✓ {perk}</p>
               ))}
-              {card.perks.length > 2 && (
-                <p className="more-perks">+{card.perks.length - 2} more benefits</p>
+              {card.perks.length > 3 && (
+                <p className="more-perks">+{card.perks.length - 3} more benefits</p>
               )}
             </div>
 
-            {card.signup_bonus && (
-              <div className="signup-bonus">
-                <span className="bonus-label">Sign-up Bonus:</span>
-                <p className="bonus-text">{card.signup_bonus}</p>
-              </div>
-            )}
-
             <div className="card-actions">
               <button 
-                onClick={() => addToWallet(card.id)}
+                onClick={() => alert('Add to Wallet functionality coming soon!')}
                 className="btn-primary add-to-wallet"
               >
                 Add to Wallet
