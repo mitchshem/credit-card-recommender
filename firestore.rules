@@ -1,0 +1,107 @@
+/**
+ * Firestore Security Rules
+ * 
+ * These rules control who can read and write data in your Firestore database.
+ * Rules are evaluated on EVERY database request - they run on Firebase servers, not in your app.
+ * 
+ * IMPORTANT:
+ * - Rules are your PRIMARY security layer - never trust client-side code alone
+ * - Test rules thoroughly using Firebase Console > Firestore > Rules > Rules Playground
+ * - Deploy rules using: firebase deploy --only firestore:rules
+ * 
+ * Rule Structure:
+ * match /path/to/collection/{documentId} {
+ *   allow read: if condition;
+ *   allow write: if condition;
+ * }
+ */
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    /**
+     * Users Collection Rules
+     * 
+     * Path: /users/{userId}
+     * 
+     * Security Model:
+     * - Each user document uses the Firebase Auth uid as the document ID
+     * - Users can ONLY read/write their own document
+     * - This is enforced by checking: request.auth.uid == userId
+     * 
+     * Example documents:
+     * - /users/abc123xyz789 (John's data)
+     * - /users/def456uvw012 (Sarah's data)
+     * 
+     * Rules:
+     * - read: User must be signed in AND the document ID must match their uid
+     * - write: Same as read - users can only update their own profile
+     */
+    match /users/{userId} {
+      // Allow read if: user is authenticated AND requesting their own document
+      allow read: if request.auth != null 
+                   && request.auth.uid == userId;
+      
+      // Allow create if: user is authenticated AND creating their own document
+      allow create: if request.auth != null 
+                     && request.auth.uid == userId
+                     // Ensure uid in document data matches auth uid (prevents spoofing)
+                     && request.resource.data.uid == userId;
+      
+      // Allow update if: user is authenticated AND updating their own document
+      allow update: if request.auth != null 
+                     && request.auth.uid == userId
+                     // Prevent changing the uid field
+                     && request.resource.data.uid == resource.data.uid;
+      
+      // Allow delete if: user is authenticated AND deleting their own document
+      // (Usually not needed - accounts are deleted via Firebase Auth, not Firestore)
+      allow delete: if request.auth != null 
+                     && request.auth.uid == userId;
+    }
+    
+    /**
+     * Future: Wallets Collection Rules
+     * 
+     * Example structure for when you want to store wallet cards separately:
+     * Path: /wallets/{walletId}
+     * 
+     * Security Model:
+     * - Each wallet document has an ownerId field
+     * - Only the owner can read/write their wallet
+     * 
+     * Uncomment and customize when ready:
+     */
+    // match /wallets/{walletId} {
+    //   allow read, write: if request.auth != null 
+    //                       && request.auth.uid == resource.data.ownerId;
+    // }
+    
+    /**
+     * Future: User Cards Collection Rules
+     * 
+     * Example structure for storing user-specific card configurations:
+     * Path: /userCards/{cardId}
+     * 
+     * Security Model:
+     * - Each card configuration belongs to a user (ownerId)
+     * - Users can only access their own card configurations
+     */
+    // match /userCards/{cardId} {
+    //   allow read, write: if request.auth != null 
+    //                       && request.auth.uid == resource.data.ownerId;
+    //   
+    //   allow create: if request.auth != null 
+    //                  && request.resource.data.ownerId == request.auth.uid;
+    // }
+    
+    /**
+     * Deny all other access by default
+     * 
+     * If a path doesn't match any rules above, access is automatically denied.
+     * This is a security best practice - explicit allow, implicit deny.
+     */
+  }
+}
+

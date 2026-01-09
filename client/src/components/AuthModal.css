@@ -228,6 +228,17 @@
   text-align: center;
 }
 
+/* Success Message */
+.auth-success {
+  padding: var(--space-md);
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: var(--radius-lg);
+  color: #16a34a;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
 /* Submit Button */
 .auth-submit-btn {
   padding: var(--space-md) var(--space-xl);

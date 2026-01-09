@@ -4,6 +4,9 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
+  sendPasswordResetEmail,
   signOut,
   onAuthStateChanged,
   updateProfile
@@ -33,6 +36,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<any>;
   loginWithGoogle: () => Promise<any>;
   loginWithApple: () => Promise<any>;
+  resetPassword: (email: string) => Promise<void>;
   logout: () => Promise<void>;
   updateUserProfile: (data: Partial<UserProfile>) => Promise<void>;
 }
@@ -86,36 +90,50 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const loginWithGoogle = async () => {
-    const result = await signInWithPopup(auth, googleProvider);
-    
-    // Check if user profile exists
-    const userDoc = await getDoc(doc(db, 'users', result.user.uid));
-    
-    if (!userDoc.exists()) {
-      // Create new profile
-      const profile: UserProfile = {
-        uid: result.user.uid,
-        email: result.user.email!,
-        displayName: result.user.displayName || 'User',
-        photoURL: result.user.photoURL || undefined,
-        wallet: [],
-        preferences: {
-          defaultCards: [],
-          favoriteCategories: []
-        },
-        createdAt: serverTimestamp(),
-        lastLogin: serverTimestamp()
-      };
+    try {
+      // Try popup first (better UX)
+      const result = await signInWithPopup(auth, googleProvider);
       
-      await setDoc(doc(db, 'users', result.user.uid), profile);
-    } else {
-      // Update last login
-      await setDoc(doc(db, 'users', result.user.uid), {
-        lastLogin: serverTimestamp()
-      }, { merge: true });
+      // Check if user profile exists
+      const userDoc = await getDoc(doc(db, 'users', result.user.uid));
+      
+      if (!userDoc.exists()) {
+        // Create new profile
+        const profile: UserProfile = {
+          uid: result.user.uid,
+          email: result.user.email!,
+          displayName: result.user.displayName || 'User',
+          photoURL: result.user.photoURL || undefined,
+          wallet: [],
+          preferences: {
+            defaultCards: [],
+            favoriteCategories: []
+          },
+          createdAt: serverTimestamp(),
+          lastLogin: serverTimestamp()
+        };
+        
+        await setDoc(doc(db, 'users', result.user.uid), profile);
+      } else {
+        // Update last login
+        await setDoc(doc(db, 'users', result.user.uid), {
+          lastLogin: serverTimestamp()
+        }, { merge: true });
+      }
+      
+      return result;
+    } catch (error: any) {
+      // If popup fails with redirect URI error, try redirect instead
+      if (error.code === 'auth/popup-blocked' || error.code === 'auth/unauthorized-domain' || error.message?.includes('OAuth 2.0 policy')) {
+        console.log('Popup blocked or OAuth error, trying redirect instead...');
+        // Use redirect instead
+        await signInWithRedirect(auth, googleProvider);
+        // Note: User will be redirected, so we return null
+        // The redirect result will be handled in useEffect below
+        return null;
+      }
+      throw error;
     }
-    
-    return result;
   };
 
   const loginWithApple = async () => {
@@ -151,6 +169,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return result;
   };
 
+  const resetPassword = async (email: string) => {
+    await sendPasswordResetEmail(auth, email);
+  };
+
   const logout = async () => {
     await signOut(auth);
     setUserProfile(null);
@@ -170,6 +192,40 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   useEffect(() => {
+    // Handle redirect result (for Google sign-in fallback)
+    getRedirectResult(auth).then(async (result) => {
+      if (result?.user) {
+        // Check if user profile exists
+        const userDoc = await getDoc(doc(db, 'users', result.user.uid));
+        
+        if (!userDoc.exists()) {
+          // Create new profile
+          const profile: UserProfile = {
+            uid: result.user.uid,
+            email: result.user.email!,
+            displayName: result.user.displayName || 'User',
+            photoURL: result.user.photoURL || undefined,
+            wallet: [],
+            preferences: {
+              defaultCards: [],
+              favoriteCategories: []
+            },
+            createdAt: serverTimestamp(),
+            lastLogin: serverTimestamp()
+          };
+          
+          await setDoc(doc(db, 'users', result.user.uid), profile);
+        } else {
+          // Update last login
+          await setDoc(doc(db, 'users', result.user.uid), {
+            lastLogin: serverTimestamp()
+          }, { merge: true });
+        }
+      }
+    }).catch((error) => {
+      console.error('Error handling redirect result:', error);
+    });
+
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setCurrentUser(user);
       
@@ -195,6 +251,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     login,
     loginWithGoogle,
     loginWithApple,
+    resetPassword,
     logout,
     updateUserProfile
   };

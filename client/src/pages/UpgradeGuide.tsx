@@ -1,162 +1,247 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { initializeWallet } from '../services/localStorage';
+import { Card } from '../domain/models';
+import { MY_CARDS } from '../data/myCards';
 
 const UpgradeGuide: React.FC = () => {
-  const [selectedCard, setSelectedCard] = useState('');
+  const [wallet, setWallet] = useState<Card[]>([]);
 
-  const upgradeOptions = [
-    {
-      from: "Chase Sapphire Preferred",
-      to: "Chase Sapphire Reserve",
-      benefits: ["3x dining/travel vs 2x", "$300 travel credit", "Priority Pass lounge access"],
-      cost: "$550 vs $95 annual fee",
-      recommendation: "Worth it if you spend $300+ on travel annually"
-    },
-    {
-      from: "Amex Gold",
-      to: "Amex Platinum",
-      benefits: ["5x flights vs 3x", "Centurion lounge access", "Hotel elite status"],
-      cost: "$695 vs $250 annual fee",
-      recommendation: "Best for frequent travelers who value lounge access"
-    },
-    {
-      from: "Capital One Venture",
-      to: "Capital One Venture X",
-      benefits: ["10x hotels vs 2x", "$300 travel credit", "Priority Pass access"],
-      cost: "$395 vs $95 annual fee",
-      recommendation: "Excellent value with effective $95 annual fee"
-    }
-  ];
+  useEffect(() => {
+    const walletCards = initializeWallet();
+    setWallet(walletCards);
+  }, []);
 
-  const downgradeOptions = [
+  const checklist = [
     {
-      from: "Chase Sapphire Reserve",
-      to: "Chase Sapphire Preferred",
-      reason: "Reduce annual fee if not using travel benefits",
-      savings: "$455 annual fee difference"
+      id: 'review_active',
+      title: 'Review Active Cards',
+      description: 'Make sure all cards you use regularly are active in your wallet',
+      completed: wallet.filter(c => c.isActive).length > 0,
+      action: 'Go to Wallet to manage active cards'
     },
     {
-      from: "Amex Platinum",
-      to: "Amex Gold",
-      reason: "Better for dining/grocery spending",
-      savings: "$445 annual fee difference"
+      id: 'set_priorities',
+      title: 'Set Your Priorities',
+      description: 'Define your primary objectives and constraints in Priorities',
+      completed: false,
+      action: 'Go to Priorities to configure your preferences'
+    },
+    {
+      id: 'costco_setup',
+      title: 'Ensure Costco Card Available',
+      description: 'Make sure you have a Visa or Mastercard active for Costco',
+      completed: wallet.some(c => 
+        c.isActive && 
+        (c.network === 'Visa' || c.network === 'Mastercard')
+      ),
+      action: 'Activate Disney Visa, Chase Debit, or Aviator in Wallet'
+    },
+    {
+      id: 'maximize_dining',
+      title: 'Maximize Dining Rewards',
+      description: 'Use Amex Gold (4x) for dining when not at Costco',
+      completed: false,
+      action: 'Use Advisor to see best card for dining'
+    },
+    {
+      id: 'maximize_groceries',
+      title: 'Maximize Grocery Rewards',
+      description: 'Use Amex Gold (4x) for groceries when not at warehouse stores',
+      completed: false,
+      action: 'Use Advisor to see best card for groceries'
+    },
+    {
+      id: 'future_linking',
+      title: 'Account Linking (Future)',
+      description: 'Delta MQD status and Amex Offers integration will be available soon',
+      completed: false,
+      action: 'Manual entry available for now',
+      future: true
     }
   ];
 
   return (
     <div className="page-container">
-      <div className="page-header">
-        <h1>📈 Upgrade/Downgrade Guide</h1>
-        <p>Learn when to upgrade or downgrade your credit cards for maximum value</p>
-      </div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="page-header"
+      >
+        <h1>Upgrade Guide</h1>
+        <p>Actionable checklist to optimize your credit card usage</p>
+      </motion.div>
 
-      <div className="guide-sections">
-        <div className="section">
-          <h3>⬆️ Upgrade Opportunities</h3>
-          <div className="options-grid">
-            {upgradeOptions.map((option, index) => (
-              <div key={index} className="card option-card">
-                <div className="option-header">
-                  <h4>{option.from} → {option.to}</h4>
-                </div>
-                <div className="option-content">
-                  <div className="benefits">
-                    <strong>Additional Benefits:</strong>
-                    <ul>
-                      {option.benefits.map((benefit, i) => (
-                        <li key={i}>{benefit}</li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div className="cost">
-                    <strong>Cost:</strong> {option.cost}
-                  </div>
-                  <div className="recommendation">
-                    <strong>Recommendation:</strong> {option.recommendation}
-                  </div>
+      {/* Checklist */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        style={{
+          background: 'rgba(255, 255, 255, 0.8)',
+          backdropFilter: 'blur(20px)',
+          padding: '2rem',
+          borderRadius: 'var(--radius-2xl)',
+          marginBottom: '2rem',
+          border: '1px solid var(--glass-border)'
+        }}
+      >
+        <h2 style={{
+          marginBottom: '1.5rem',
+          color: 'var(--primary-800)',
+          fontSize: '1.5rem',
+          fontWeight: 700
+        }}>
+          Optimization Checklist
+        </h2>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          {checklist.map((item, index) => (
+            <motion.div
+              key={item.id}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1 + index * 0.1 }}
+              style={{
+                padding: '1.5rem',
+                background: item.completed ? 'var(--accent-50)' : 'var(--primary-50)',
+                border: `2px solid ${item.completed ? 'var(--accent-300)' : 'var(--primary-200)'}`,
+                borderRadius: 'var(--radius-xl)',
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '1rem',
+                position: 'relative'
+              }}
+            >
+              <div style={{
+                width: '24px',
+                height: '24px',
+                borderRadius: 'var(--radius-full)',
+                background: item.completed ? 'var(--accent-500)' : 'var(--primary-300)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+                marginTop: '0.125rem'
+              }}>
+                {item.completed && (
+                  <span style={{ color: 'white', fontSize: '0.875rem', fontWeight: 700 }}>✓</span>
+                )}
+              </div>
+              <div style={{ flex: 1 }}>
+                <h3 style={{
+                  marginBottom: '0.5rem',
+                  color: 'var(--primary-800)',
+                  fontSize: '1.1rem',
+                  fontWeight: 600
+                }}>
+                  {item.title}
+                  {item.future && (
+                    <span style={{
+                      marginLeft: '0.5rem',
+                      padding: '0.25rem 0.5rem',
+                      background: 'var(--primary-200)',
+                      borderRadius: 'var(--radius-sm)',
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      color: 'var(--primary-700)'
+                    }}>
+                      Future
+                    </span>
+                  )}
+                </h3>
+                <p style={{
+                  marginBottom: '0.75rem',
+                  color: 'var(--primary-600)',
+                  fontSize: '0.95rem',
+                  lineHeight: 1.5
+                }}>
+                  {item.description}
+                </p>
+                <div style={{
+                  padding: '0.75rem',
+                  background: 'white',
+                  borderRadius: 'var(--radius-lg)',
+                  fontSize: '0.875rem',
+                  color: 'var(--primary-700)',
+                  fontStyle: 'italic'
+                }}>
+                  → {item.action}
                 </div>
               </div>
-            ))}
-          </div>
+            </motion.div>
+          ))}
         </div>
+      </motion.div>
 
-        <div className="section">
-          <h3>⬇️ Downgrade Considerations</h3>
-          <div className="options-grid">
-            {downgradeOptions.map((option, index) => (
-              <div key={index} className="card option-card downgrade">
-                <div className="option-header">
-                  <h4>{option.from} → {option.to}</h4>
-                </div>
-                <div className="option-content">
-                  <div className="reason">
-                    <strong>When to Consider:</strong> {option.reason}
-                  </div>
-                  <div className="savings">
-                    <strong>Savings:</strong> {option.savings}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+      {/* Account Linking Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+        style={{
+          background: 'rgba(255, 255, 255, 0.8)',
+          backdropFilter: 'blur(20px)',
+          padding: '2rem',
+          borderRadius: 'var(--radius-2xl)',
+          border: '1px solid var(--glass-border)'
+        }}
+      >
+        <h2 style={{
+          marginBottom: '1.5rem',
+          color: 'var(--primary-800)',
+          fontSize: '1.5rem',
+          fontWeight: 700
+        }}>
+          Account Linking (Future)
+        </h2>
+        <div style={{
+          padding: '1.5rem',
+          background: 'var(--primary-50)',
+          borderRadius: 'var(--radius-xl)',
+          marginBottom: '1.5rem'
+        }}>
+          <p style={{
+            marginBottom: '1rem',
+            color: 'var(--primary-700)',
+            lineHeight: 1.6
+          }}>
+            <strong>Not available yet—requires official integration or secure auth.</strong>
+          </p>
+          <p style={{
+            marginBottom: '1rem',
+            color: 'var(--primary-600)',
+            fontSize: '0.95rem',
+            lineHeight: 1.6
+          }}>
+            Delta MQD status and Amex Offers are not accessible via public APIs. This would require:
+          </p>
+          <ul style={{
+            marginLeft: '1.5rem',
+            color: 'var(--primary-600)',
+            fontSize: '0.95rem',
+            lineHeight: 1.8
+          }}>
+            <li>Official Delta and American Express API integration</li>
+            <li>Secure OAuth authentication flow</li>
+            <li>Third-party aggregator service</li>
+            <li>Manual entry option (available now)</li>
+          </ul>
         </div>
-
-        <div className="section">
-          <h3>🧮 Upgrade Calculator</h3>
-          <div className="card">
-            <div className="calculator-form">
-              <div className="form-group">
-                <label>Current Card:</label>
-                <select 
-                  value={selectedCard} 
-                  onChange={(e) => setSelectedCard(e.target.value)}
-                >
-                  <option value="">Select your current card</option>
-                  <option value="csp">Chase Sapphire Preferred</option>
-                  <option value="amex_gold">Amex Gold</option>
-                  <option value="venture">Capital One Venture</option>
-                </select>
-              </div>
-              
-              {selectedCard && (
-                <div className="calculator-results">
-                  <h4>Upgrade Analysis</h4>
-                  <p>Based on your spending patterns, we'll calculate if an upgrade makes sense.</p>
-                  <div className="placeholder-content">
-                    <p><em>Interactive calculator coming soon</em></p>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
+        <div style={{
+          padding: '1rem',
+          background: 'white',
+          borderRadius: 'var(--radius-lg)',
+          border: '1px solid var(--primary-200)'
+        }}>
+          <strong style={{ color: 'var(--primary-800)', display: 'block', marginBottom: '0.5rem' }}>
+            Manual Entry Available:
+          </strong>
+          <p style={{ color: 'var(--primary-600)', fontSize: '0.95rem' }}>
+            For now, you can manually track your Delta MQDs and status in your notes. 
+            This feature will be expanded when official integration becomes available.
+          </p>
         </div>
-
-        <div className="section">
-          <h3>📚 General Guidelines</h3>
-          <div className="card">
-            <div className="guidelines">
-              <div className="guideline-item">
-                <h4>✅ Consider Upgrading When:</h4>
-                <ul>
-                  <li>Your spending patterns align with premium card benefits</li>
-                  <li>You can utilize travel credits and perks</li>
-                  <li>The additional rewards offset the higher annual fee</li>
-                  <li>You value premium perks like lounge access</li>
-                </ul>
-              </div>
-              
-              <div className="guideline-item">
-                <h4>❌ Consider Downgrading When:</h4>
-                <ul>
-                  <li>You're not using the premium benefits</li>
-                  <li>Your spending doesn't justify the annual fee</li>
-                  <li>You want to simplify your wallet</li>
-                  <li>You're not traveling frequently</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      </motion.div>
     </div>
   );
 };

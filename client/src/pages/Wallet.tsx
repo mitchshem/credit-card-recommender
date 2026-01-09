@@ -1,339 +1,352 @@
+/**
+ * Wallet Page
+ * 
+ * Shows user's cards with beautiful tiles and detail views.
+ */
+
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import CardSelector from '../components/CardSelector';
-import { Card } from '../types/data';
-import { cardsData } from '../data';
-import {
-  getUserWallet,
-  mergeUserWalletWithCards,
-  addCardToUserWallet,
-  removeCardFromUserWallet,
-  toggleUserCardSelection,
-  toggleAllUserCardsSelection
-} from '../lib/userWallet';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Card } from '../domain/models';
+import { initializeWallet, saveWallet } from '../services/localStorage';
+import { MY_CARDS, CATEGORY_NAMES } from '../data/myCards';
 
 const Wallet: React.FC = () => {
-  const { currentUser } = useAuth();
-  const [userCards, setUserCards] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState('');
-  const [showAddCard, setShowAddCard] = useState(false);
+  const [wallet, setWallet] = useState<Card[]>([]);
+  const [selectedCard, setSelectedCard] = useState<Card | null>(null);
 
-  // Load user's wallet cards
   useEffect(() => {
-    if (currentUser) {
-      loadUserWallet();
-    } else {
-      // Guest mode - use local storage
-      setUserCards([]);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentUser]);
+    const walletCards = initializeWallet();
+    setWallet(walletCards);
+  }, []);
 
-  const loadUserWallet = async () => {
-    if (!currentUser) return;
-    
-    setIsLoading(true);
-    try {
-      const wallet = await getUserWallet(currentUser.uid);
-      
-      if (wallet) {
-        const mergedCards = mergeUserWalletWithCards(wallet, cardsData as Card[]);
-        setUserCards(mergedCards);
-      }
-    } catch (error) {
-      console.error('Error loading wallet:', error);
-      setMessage('Failed to load wallet');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleCardSelect = async (card: Card) => {
-    if (!currentUser) {
-      setMessage('Please sign in to add cards to your wallet');
-      return;
-    }
-
-    try {
-      setIsLoading(true);
-      await addCardToUserWallet(currentUser.uid, card.id, undefined, true);
-      setMessage(`✅ ${card.name} added to your wallet!`);
-      setShowAddCard(false);
-      await loadUserWallet();
-      
-      setTimeout(() => setMessage(''), 3000);
-    } catch (error) {
-      console.error('Error adding card:', error);
-      setMessage('Failed to add card');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleRemoveCard = async (cardId: string) => {
-    if (!currentUser) return;
-
-    try {
-      setIsLoading(true);
-      await removeCardFromUserWallet(currentUser.uid, cardId);
-      setMessage('Card removed from wallet');
-      await loadUserWallet();
-      
-      setTimeout(() => setMessage(''), 3000);
-    } catch (error) {
-      console.error('Error removing card:', error);
-      setMessage('Failed to remove card');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleToggleSelection = async (cardId: string) => {
-    if (!currentUser) return;
-
-    try {
-      await toggleUserCardSelection(currentUser.uid, cardId);
-      await loadUserWallet();
-    } catch (error) {
-      console.error('Error toggling selection:', error);
-    }
-  };
-
-  const handleToggleAll = async (selected: boolean) => {
-    if (!currentUser) return;
-
-    try {
-      setIsLoading(true);
-      await toggleAllUserCardsSelection(currentUser.uid, selected);
-      await loadUserWallet();
-    } catch (error) {
-      console.error('Error toggling all cards:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const allSelected = userCards.length > 0 && userCards.every(card => card.isSelected);
-
-  if (!currentUser) {
-    return (
-      <div className="page-container">
-        <div className="page-header">
-          <h1>💳 My Wallet</h1>
-          <p>Sign in to manage your credit cards and get personalized recommendations</p>
-        </div>
-        
-        <div style={{
-          textAlign: 'center',
-          padding: '3rem',
-          background: 'rgba(255, 255, 255, 0.8)',
-          borderRadius: 'var(--radius-2xl)',
-          marginTop: '2rem'
-        }}>
-          <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🔐</div>
-          <h2 style={{ color: 'var(--primary-800)', marginBottom: '0.5rem' }}>
-            Sign in required
-          </h2>
-          <p style={{ color: 'var(--primary-600)' }}>
-            Please sign in to access your wallet and manage your credit cards
-          </p>
-        </div>
-      </div>
+  const handleToggleActive = (cardId: string) => {
+    const updatedWallet = wallet.map(card =>
+      card.id === cardId ? { ...card, isActive: !card.isActive } : card
     );
-  }
+    setWallet(updatedWallet);
+    saveWallet(updatedWallet);
+  };
+
+  const handleCardClick = (card: Card) => {
+    setSelectedCard(card);
+  };
+
+  const getCardColor = (network: string) => {
+    switch (network) {
+      case 'American Express':
+        return 'linear-gradient(135deg, #006FCF 0%, #0054A6 100%)';
+      case 'Visa':
+        return 'linear-gradient(135deg, #1A1F71 0%, #2E3180 100%)';
+      case 'Mastercard':
+        return 'linear-gradient(135deg, #EB001B 0%, #F79E1B 100%)';
+      default:
+        return 'linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%)';
+    }
+  };
 
   return (
     <div className="page-container">
-      <div className="page-header">
-        <h1>💳 My Wallet</h1>
-        <p>Manage your credit cards and get personalized recommendations</p>
-      </div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="page-header"
+      >
+        <h1>My Wallet</h1>
+        <p>Your credit cards and their benefits</p>
+      </motion.div>
 
-      {message && (
-        <div style={{
-          padding: '1rem',
-          background: 'var(--accent-500)',
-          color: 'white',
-          borderRadius: 'var(--radius-lg)',
-          marginBottom: '1.5rem',
-          textAlign: 'center'
-        }}>
-          {message}
-        </div>
-      )}
-
-      {/* Add Card Section */}
+      {/* Cards Grid */}
       <div style={{
-        background: 'rgba(255, 255, 255, 0.8)',
-        padding: '2rem',
-        borderRadius: 'var(--radius-2xl)',
-        marginBottom: '2rem',
-        border: '1px solid var(--primary-200)'
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+        gap: '1.5rem',
+        marginBottom: '2rem'
       }}>
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '1rem'
-        }}>
-          <h2 style={{ color: 'var(--primary-800)' }}>Add Card to Wallet</h2>
-          <button
-            onClick={() => setShowAddCard(!showAddCard)}
-            className="btn-primary"
-            style={{ padding: '0.5rem 1.5rem' }}
+        {wallet.map((card) => (
+          <motion.div
+            key={card.id}
+            whileHover={{ scale: 1.02, y: -4 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => handleCardClick(card)}
+            style={{
+              background: getCardColor(card.network),
+              borderRadius: 'var(--radius-2xl)',
+              padding: '2rem',
+              color: 'white',
+              cursor: 'pointer',
+              boxShadow: 'var(--shadow-xl)',
+              position: 'relative',
+              overflow: 'hidden',
+              opacity: card.isActive ? 1 : 0.6
+            }}
           >
-            {showAddCard ? 'Cancel' : '+ Add Card'}
-          </button>
-        </div>
-
-        {showAddCard && (
-          <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
-            <CardSelector
-              onSelectCard={handleCardSelect}
-              excludedCardIds={userCards.map(c => c.id)}
-            />
-          </div>
-        )}
-      </div>
-
-      {/* Wallet Cards List */}
-      <div style={{
-        background: 'rgba(255, 255, 255, 0.8)',
-        padding: '2rem',
-        borderRadius: 'var(--radius-2xl)',
-        border: '1px solid var(--primary-200)'
-      }}>
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '1.5rem'
-        }}>
-          <h2 style={{ color: 'var(--primary-800)' }}>
-            My Cards ({userCards.length})
-          </h2>
-          {userCards.length > 0 && (
-            <button
-              onClick={() => handleToggleAll(!allSelected)}
-              className="btn-secondary"
-            >
-              {allSelected ? 'Deselect All' : 'Select All'}
-            </button>
-          )}
-        </div>
-
-        {isLoading ? (
-          <div style={{ textAlign: 'center', padding: '3rem' }}>
-            <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⏳</div>
-            <p style={{ color: 'var(--primary-600)' }}>Loading...</p>
-          </div>
-        ) : userCards.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '3rem' }}>
-            <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>💼</div>
-            <h3 style={{ color: 'var(--primary-800)', marginBottom: '0.5rem' }}>
-              Your wallet is empty
-            </h3>
-            <p style={{ color: 'var(--primary-600)' }}>
-              Add credit cards to start tracking and getting recommendations
-            </p>
-          </div>
-        ) : (
-          <div style={{ display: 'grid', gap: '1rem' }}>
-            {userCards.map((card) => (
-              <div
-                key={card.id}
-                style={{
-                  padding: '1.5rem',
-                  background: 'white',
-                  border: '2px solid',
-                  borderColor: card.isSelected ? 'var(--accent-500)' : 'var(--primary-200)',
-                  borderRadius: 'var(--radius-xl)',
-                  transition: 'all 0.2s ease',
-                  cursor: 'pointer'
-                }}
-                onClick={() => handleToggleSelection(card.id)}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
-                  <div style={{ flex: 1 }}>
-                    <div style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.75rem',
-                      marginBottom: '0.5rem'
-                    }}>
-                      <h3 style={{ color: 'var(--primary-800)', margin: 0 }}>
-                        {card.name}
-                      </h3>
-                      {card.isSelected && (
-                        <span style={{
-                          background: 'var(--accent-500)',
-                          color: 'white',
-                          padding: '2px 8px',
-                          borderRadius: 'var(--radius-sm)',
-                          fontSize: '0.75rem',
-                          fontWeight: 600
-                        }}>
-                          Active
-                        </span>
-                      )}
-                    </div>
-                    <p style={{
-                      color: 'var(--primary-600)',
-                      fontSize: '0.9rem',
-                      margin: '0.25rem 0'
-                    }}>
-                      {card.network} • Annual Fee: {card.annual_fee === 0 ? 'Free' : `$${card.annual_fee}`}
-                    </p>
-                    
-                    {card.signup_bonus && (
-                      <div style={{
-                        background: 'var(--primary-50)',
-                        padding: '0.75rem',
-                        borderRadius: 'var(--radius-lg)',
-                        marginTop: '0.75rem'
-                      }}>
-                        <strong style={{ color: 'var(--accent-600)' }}>
-                          🎁 Sign-up Bonus:
-                        </strong>{' '}
-                        {card.signup_bonus.points || card.signup_bonus.miles} {card.signup_bonus.points ? 'points' : 'miles'}
-                        {' '}worth ~${card.signup_bonus.value}
-                      </div>
-                    )}
-                  </div>
-
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleRemoveCard(card.id);
-                    }}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      color: 'var(--primary-600)',
-                      fontSize: '1.5rem',
-                      cursor: 'pointer',
-                      padding: '0.5rem',
-                      borderRadius: 'var(--radius-full)',
-                      transition: 'all 0.2s ease'
-                    }}
-                    onMouseOver={(e) => {
-                      e.currentTarget.style.background = 'var(--primary-100)';
-                      e.currentTarget.style.color = '#ef4444';
-                    }}
-                    onMouseOut={(e) => {
-                      e.currentTarget.style.background = 'none';
-                      e.currentTarget.style.color = 'var(--primary-600)';
-                    }}
-                  >
-                    🗑️
-                  </button>
+            <div style={{
+              position: 'absolute',
+              top: '1rem',
+              right: '1rem',
+              background: card.isActive ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)',
+              padding: '0.5rem 1rem',
+              borderRadius: 'var(--radius-full)',
+              fontSize: '0.75rem',
+              fontWeight: 600
+            }}>
+              {card.isActive ? 'Active' : 'Inactive'}
+            </div>
+            <div style={{ marginBottom: '1rem' }}>
+              <div style={{ fontSize: '0.875rem', opacity: 0.9, marginBottom: '0.5rem' }}>
+                {card.network}
+              </div>
+              <h2 style={{ 
+                fontSize: '1.5rem',
+                fontWeight: 700,
+                marginBottom: '0.5rem',
+                lineHeight: 1.2
+              }}>
+                {card.name}
+              </h2>
+            </div>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginTop: '1.5rem',
+              paddingTop: '1.5rem',
+              borderTop: '1px solid rgba(255, 255, 255, 0.2)'
+            }}>
+              <div>
+                <div style={{ fontSize: '0.75rem', opacity: 0.9 }}>Annual Fee</div>
+                <div style={{ fontSize: '1.25rem', fontWeight: 700 }}>
+                  {card.annualFee === 0 ? 'No Fee' : `$${card.annualFee}`}
                 </div>
               </div>
-            ))}
-          </div>
-        )}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleToggleActive(card.id);
+                }}
+                style={{
+                  padding: '0.5rem 1rem',
+                  background: card.isActive ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0.3)',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  borderRadius: 'var(--radius-lg)',
+                  color: 'white',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  fontSize: '0.875rem'
+                }}
+              >
+                {card.isActive ? 'Deactivate' : 'Activate'}
+              </button>
+            </div>
+          </motion.div>
+        ))}
       </div>
+
+      {/* Card Detail Modal */}
+      <AnimatePresence>
+        {selectedCard && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedCard(null)}
+              style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: 'rgba(0, 0, 0, 0.5)',
+                zIndex: 2000,
+                backdropFilter: 'blur(4px)'
+              }}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              style={{
+                position: 'fixed',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                background: 'white',
+                borderRadius: 'var(--radius-2xl)',
+                padding: '2rem',
+                maxWidth: '600px',
+                width: '90%',
+                maxHeight: '90vh',
+                overflowY: 'auto',
+                zIndex: 2001,
+                boxShadow: 'var(--shadow-2xl)'
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setSelectedCard(null)}
+                style={{
+                  position: 'absolute',
+                  top: '1rem',
+                  right: '1rem',
+                  background: 'var(--primary-100)',
+                  border: 'none',
+                  borderRadius: 'var(--radius-full)',
+                  width: '32px',
+                  height: '32px',
+                  cursor: 'pointer',
+                  fontSize: '1.25rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                ×
+              </button>
+
+              <div style={{
+                background: getCardColor(selectedCard.network),
+                borderRadius: 'var(--radius-xl)',
+                padding: '2rem',
+                color: 'white',
+                marginBottom: '2rem'
+              }}>
+                <h2 style={{ fontSize: '1.75rem', fontWeight: 700, marginBottom: '0.5rem' }}>
+                  {selectedCard.name}
+                </h2>
+                <div style={{ opacity: 0.9 }}>{selectedCard.network}</div>
+              </div>
+
+              <div style={{ marginBottom: '2rem' }}>
+                <h3 style={{ 
+                  marginBottom: '1rem',
+                  color: 'var(--primary-800)',
+                  fontSize: '1.25rem',
+                  fontWeight: 700
+                }}>
+                  Earn Structure
+                </h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  {Object.entries(selectedCard.rewardsProfile.categoryMultipliers).map(([category, rate]) => (
+                    <div
+                      key={category}
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        padding: '1rem',
+                        background: 'var(--primary-50)',
+                        borderRadius: 'var(--radius-lg)'
+                      }}
+                    >
+                      <span style={{ fontWeight: 500, color: 'var(--primary-800)' }}>
+                        {CATEGORY_NAMES[category as keyof typeof CATEGORY_NAMES] || category}
+                      </span>
+                      <span style={{
+                        fontSize: '1.25rem',
+                        fontWeight: 700,
+                        color: 'var(--accent-600)'
+                      }}>
+                        {rate}x
+                      </span>
+                    </div>
+                  ))}
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    padding: '1rem',
+                    background: 'var(--primary-50)',
+                    borderRadius: 'var(--radius-lg)'
+                  }}>
+                    <span style={{ fontWeight: 500, color: 'var(--primary-800)' }}>All Other Purchases</span>
+                    <span style={{
+                      fontSize: '1.25rem',
+                      fontWeight: 700,
+                      color: 'var(--primary-700)'
+                    }}>
+                      {selectedCard.rewardsProfile.baseRate}x
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {selectedCard.rewardsProfile.notes && (
+                <div style={{ marginBottom: '2rem' }}>
+                  <h3 style={{
+                    marginBottom: '1rem',
+                    color: 'var(--primary-800)',
+                    fontSize: '1.25rem',
+                    fontWeight: 700
+                  }}>
+                    Key Benefits
+                  </h3>
+                  <div style={{
+                    padding: '1rem',
+                    background: 'var(--primary-50)',
+                    borderRadius: 'var(--radius-lg)',
+                    color: 'var(--primary-700)'
+                  }}>
+                    {selectedCard.rewardsProfile.notes}
+                  </div>
+                </div>
+              )}
+
+              {selectedCard.benefits && selectedCard.benefits.length > 0 && (
+                <div style={{ marginBottom: '2rem' }}>
+                  <h3 style={{
+                    marginBottom: '1rem',
+                    color: 'var(--primary-800)',
+                    fontSize: '1.25rem',
+                    fontWeight: 700
+                  }}>
+                    Additional Perks
+                  </h3>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                    {selectedCard.benefits.map((benefit, index) => (
+                      <div
+                        key={index}
+                        style={{
+                          padding: '0.75rem',
+                          background: 'var(--primary-50)',
+                          borderRadius: 'var(--radius-lg)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.5rem'
+                        }}
+                      >
+                        <span>✓</span>
+                        <span style={{ color: 'var(--primary-700)' }}>{benefit.description}</span>
+                        {benefit.value && (
+                          <span style={{
+                            marginLeft: 'auto',
+                            fontWeight: 600,
+                            color: 'var(--accent-600)'
+                          }}>
+                            {benefit.value}
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {selectedCard.network === 'American Express' && (
+                <div style={{
+                  padding: '1rem',
+                  background: 'rgba(255, 193, 7, 0.1)',
+                  border: '1px solid #ffc107',
+                  borderRadius: 'var(--radius-lg)',
+                  color: '#f57c00'
+                }}>
+                  <strong>Note:</strong> This card is not accepted at Costco or other merchants that don't accept American Express.
+                </div>
+              )}
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

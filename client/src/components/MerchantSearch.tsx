@@ -221,7 +221,7 @@ const MerchantSearch: React.FC = () => {
             margin: '0 auto',
           }}
         >
-          💳 {showWallet ? 'Hide Wallet' : 'Show Wallet'} ({walletCards.length} cards)
+          {showWallet ? 'Hide Wallet' : 'Show Wallet'} ({walletCards.length} cards)
         </button>
       </div>
 
@@ -229,7 +229,7 @@ const MerchantSearch: React.FC = () => {
         <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', border: '1px solid var(--primary-200)', borderRadius: '8px', padding: '20px', marginBottom: '30px', backdropFilter: 'blur(20px)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
             <h3 style={{ margin: 0, color: 'var(--primary-800)' }}>
-              💳 My Wallet ({walletCards.length} cards, {walletCards.filter((card) => card.isSelected).length} selected)
+              My Wallet ({walletCards.length} cards, {walletCards.filter((card) => card.isSelected).length} selected)
             </h3>
             {walletCards.length > 0 && (
               <button
@@ -252,7 +252,6 @@ const MerchantSearch: React.FC = () => {
 
           {walletCards.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--primary-600)', backgroundColor: 'rgba(255, 255, 255, 0.6)', borderRadius: '8px', border: '2px dashed var(--primary-300)' }}>
-              <div style={{ fontSize: '48px', marginBottom: '15px' }}>💳</div>
               <h4 style={{ margin: '0 0 10px 0', color: 'var(--primary-700)' }}>Your wallet is empty</h4>
               <p style={{ margin: 0, fontSize: '14px' }}>Add cards below to start getting recommendations</p>
             </div>

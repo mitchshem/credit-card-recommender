@@ -1,0 +1,1712 @@
+const fs = require('fs').promises;
+const path = require('path');
+
+/**
+ * Comprehensive Credit Card Database Generator
+ * Populates all 50 cards with detailed benefits, rewards, and perks
+ */
+class ComprehensiveCardDatabase {
+  constructor() {
+    this.cards = [];
+  }
+
+  generateAllCards() {
+    console.log('🔄 Generating comprehensive card database with 50 cards...');
+    
+    // Chase Cards (1-8)
+    this.cards.push(
+      // 1. Chase Sapphire Preferred
+      {
+        id: 'chase_sapphire_preferred',
+        name: 'Chase Sapphire Preferred',
+        network: 'Visa',
+        issuer: 'Chase',
+        annual_fee: 95,
+        reward_rates: {
+          travel: 5,
+          dining: 2,
+          other: 1
+        },
+        signup_bonus: {
+          points: 60000,
+          spend_required: 4000,
+          months: 3,
+          value: 750
+        },
+        perks: [
+          '60,000 bonus points after $4,000 spend in first 3 months',
+          '5x points on travel purchased through Chase Ultimate Rewards',
+          '2x points on dining worldwide',
+          '1.25x redemption value toward travel through Chase',
+          'Trip cancellation/interruption insurance',
+          'Baggage delay insurance',
+          'Primary car rental insurance',
+          'No foreign transaction fees'
+        ],
+        benefits: {
+          travel_insurance: true,
+          rental_car_insurance: true,
+          trip_cancellation: true,
+          baggage_delay: true,
+          purchase_protection: true,
+          extended_warranty: true
+        },
+        fees: {
+          foreign_transaction: 0,
+          cash_advance: 5,
+          late_payment: 40,
+          over_limit: 0
+        },
+        redemption: {
+          options: ['travel', 'cash_back', 'gift_cards', 'transfers'],
+          best_value: 'travel_transfers',
+          transfer_partners: ['United', 'Hyatt', 'Southwest', 'British Airways', 'Air France', 'Singapore Airlines']
+        },
+        categories: ['travel', 'dining'],
+        credit_score_required: 'good',
+        recommended_for: ['Travel enthusiasts', 'Dining lovers', 'Flexible travelers']
+      },
+      
+      // 2. Chase Sapphire Reserve
+      {
+        id: 'chase_sapphire_reserve',
+        name: 'Chase Sapphire Reserve',
+        network: 'Visa',
+        issuer: 'Chase',
+        annual_fee: 550,
+        reward_rates: {
+          travel: 10,
+          dining: 10,
+          other: 1
+        },
+        signup_bonus: {
+          points: 50000,
+          spend_required: 4000,
+          months: 3,
+          value: 750
+        },
+        perks: [
+          '50,000 bonus points after $4,000 spend in first 3 months',
+          '10x points on hotels and car rentals through Chase Ultimate Rewards',
+          '10x points on dining through Chase Ultimate Rewards',
+          '5x points on flights purchased through Chase Ultimate Rewards',
+          '$300 annual travel credit',
+          'Priority Pass Select membership',
+          'Global Entry/TSA PreCheck credit (up to $100 every 4 years)',
+          '1.5x redemption value toward travel through Chase',
+          'Trip cancellation/interruption insurance',
+          'Baggage delay insurance',
+          'Primary car rental insurance',
+          'No foreign transaction fees'
+        ],
+        benefits: {
+          travel_insurance: true,
+          rental_car_insurance: true,
+          trip_cancellation: true,
+          baggage_delay: true,
+          purchase_protection: true,
+          extended_warranty: true,
+          airport_lounge_access: true,
+          concierge_service: true
+        },
+        fees: {
+          foreign_transaction: 0,
+          cash_advance: 5,
+          late_payment: 40,
+          over_limit: 0
+        },
+        redemption: {
+          options: ['travel', 'cash_back', 'gift_cards', 'transfers'],
+          best_value: 'travel_transfers',
+          transfer_partners: ['United', 'Hyatt', 'Southwest', 'British Airways', 'Air France', 'Singapore Airlines']
+        },
+        categories: ['travel', 'dining', 'premium'],
+        credit_score_required: 'excellent',
+        recommended_for: ['Premium travelers', 'Frequent flyers', 'Lounge enthusiasts']
+      },
+      
+      // 3. Chase Freedom Unlimited
+      {
+        id: 'chase_freedom_unlimited',
+        name: 'Chase Freedom Unlimited',
+        network: 'Mastercard',
+        issuer: 'Chase',
+        annual_fee: 0,
+        reward_rates: {
+          dining: 3,
+          drugstores: 3,
+          other: 1.5
+        },
+        signup_bonus: {
+          points: 20000,
+          spend_required: 500,
+          months: 3,
+          value: 300
+        },
+        perks: [
+          '20,000 bonus points after $500 spend in first 3 months ($300 value)',
+          '5% cash back on travel purchased through Chase Ultimate Rewards',
+          '3% cash back on dining and drugstores',
+          '1.5% cash back on all other purchases',
+          'Intro 0% APR for 15 months on purchases and balance transfers',
+          'Can transfer points to Sapphire cards for travel redemption',
+          'Purchase protection',
+          'Extended warranty protection'
+        ],
+        benefits: {
+          purchase_protection: true,
+          extended_warranty: true
+        },
+        fees: {
+          foreign_transaction: 3,
+          cash_advance: 5,
+          late_payment: 40,
+          over_limit: 0
+        },
+        redemption: {
+          options: ['cash_back', 'gift_cards', 'travel', 'transfers'],
+          best_value: 'transfers_via_sapphire'
+        },
+        categories: ['cash_back', 'dining', 'all_purpose'],
+        credit_score_required: 'good',
+        recommended_for: ['Everyday spenders', 'Cash back seekers', 'Chase ecosystem members']
+      },
+      
+      // 4. Chase Freedom Flex
+      {
+        id: 'chase_freedom_flex',
+        name: 'Chase Freedom Flex',
+        network: 'Mastercard',
+        issuer: 'Chase',
+        annual_fee: 0,
+        reward_rates: {
+          rotating: 5,
+          dining: 3,
+          drugstores: 3,
+          other: 1
+        },
+        signup_bonus: {
+          points: 20000,
+          spend_required: 500,
+          months: 3,
+          value: 300
+        },
+        perks: [
+          '20,000 bonus points after $500 spend in first 3 months',
+          '5% cash back on rotating quarterly categories (up to $1,500 per quarter)',
+          '5% cash back on travel purchased through Chase Ultimate Rewards',
+          '3% cash back on dining and drugstores',
+          '1% cash back on all other purchases',
+          'Intro 0% APR for 15 months on purchases and balance transfers',
+          'Can transfer points to Sapphire cards for travel redemption',
+          'Purchase protection',
+          'Extended warranty protection'
+        ],
+        benefits: {
+          purchase_protection: true,
+          extended_warranty: true
+        },
+        fees: {
+          foreign_transaction: 3,
+          cash_advance: 5,
+          late_payment: 40,
+          over_limit: 0
+        },
+        redemption: {
+          options: ['cash_back', 'gift_cards', 'travel', 'transfers'],
+          best_value: 'transfers_via_sapphire'
+        },
+        categories: ['cash_back', 'rotating', 'dining'],
+        credit_score_required: 'good',
+        recommended_for: ['Category maximizers', 'Cash back enthusiasts', 'Flexible spenders']
+      },
+      
+      // 5. Chase Slate Edge
+      {
+        id: 'chase_slate_edge',
+        name: 'Chase Slate Edge',
+        network: 'Visa',
+        issuer: 'Chase',
+        annual_fee: 0,
+        reward_rates: {},
+        signup_bonus: null,
+        perks: [
+          '0% intro APR for 18 months on purchases and balance transfers',
+          'Lower your interest rate by 2% each year with on-time payments (up to 5 times)',
+          'Fee-free balance transfers in first 60 days',
+          'Credit Journey credit score monitoring',
+          'No annual fee'
+        ],
+        benefits: {},
+        fees: {
+          foreign_transaction: 3,
+          cash_advance: 5,
+          late_payment: 40,
+          over_limit: 0
+        },
+        redemption: {
+          options: []
+        },
+        categories: ['balance_transfer', 'debt_consolidation'],
+        credit_score_required: 'fair',
+        recommended_for: ['Debt consolidation', 'Balance transfers', 'Building credit']
+      },
+      
+      // 6. Chase Ink Business Preferred
+      {
+        id: 'chase_ink_business_preferred',
+        name: 'Chase Ink Business Preferred',
+        network: 'Visa',
+        issuer: 'Chase',
+        annual_fee: 95,
+        reward_rates: {
+          travel: 5,
+          shipping: 5,
+          advertising: 5,
+          internet: 5,
+          other: 1
+        },
+        signup_bonus: {
+          points: 100000,
+          spend_required: 8000,
+          months: 3,
+          value: 1250
+        },
+        perks: [
+          '100,000 bonus points after $8,000 spend in first 3 months',
+          '5x points on travel purchased through Chase Ultimate Rewards',
+          '5x points on shipping purchases',
+          '5x points on advertising purchases with social media and search engines',
+          '5x points on internet, cable, and phone services',
+          '1.25x redemption value toward travel through Chase',
+          'Transfer points to airline and hotel partners',
+          'Trip cancellation/interruption insurance',
+          'Primary car rental insurance',
+          'Cell phone protection',
+          'Extended warranty protection',
+          'No foreign transaction fees'
+        ],
+        benefits: {
+          travel_insurance: true,
+          rental_car_insurance: true,
+          trip_cancellation: true,
+          purchase_protection: true,
+          extended_warranty: true,
+          cell_phone_protection: true
+        },
+        fees: {
+          foreign_transaction: 0,
+          cash_advance: 5,
+          late_payment: 40,
+          over_limit: 0
+        },
+        redemption: {
+          options: ['travel', 'cash_back', 'gift_cards', 'transfers'],
+          best_value: 'travel_transfers',
+          transfer_partners: ['United', 'Hyatt', 'Southwest', 'British Airways', 'Air France']
+        },
+        categories: ['business', 'travel', 'shipping'],
+        credit_score_required: 'good',
+        recommended_for: ['Small businesses', 'Frequent travelers', 'Business advertising']
+      },
+      
+      // 7. Chase Ink Business Cash
+      {
+        id: 'chase_ink_business_cash',
+        name: 'Chase Ink Business Cash',
+        network: 'Visa',
+        issuer: 'Chase',
+        annual_fee: 0,
+        reward_rates: {
+          office: 5,
+          internet: 5,
+          phone: 5,
+          gas: 2,
+          dining: 2,
+          other: 1
+        },
+        signup_bonus: {
+          points: 75000,
+          spend_required: 6000,
+          months: 3,
+          value: 750
+        },
+        perks: [
+          '75,000 bonus points after $6,000 spend in first 3 months',
+          '5% cash back on office supply stores and internet, cable, and phone services (up to $25,000 combined per year)',
+          '2% cash back at gas stations and restaurants (up to $25,000 combined per year)',
+          '1% cash back on all other purchases',
+          'Points can be transferred to Sapphire cards for travel redemption',
+          'Employee cards at no additional cost',
+          'Purchase protection',
+          'Extended warranty protection'
+        ],
+        benefits: {
+          purchase_protection: true,
+          extended_warranty: true
+        },
+        fees: {
+          foreign_transaction: 3,
+          cash_advance: 5,
+          late_payment: 40,
+          over_limit: 0
+        },
+        redemption: {
+          options: ['cash_back', 'gift_cards', 'travel', 'transfers'],
+          best_value: 'transfers_via_sapphire'
+        },
+        categories: ['business', 'office', 'cash_back'],
+        credit_score_required: 'good',
+        recommended_for: ['Small businesses', 'Office supply shoppers', 'Cash back businesses']
+      },
+      
+      // 8. Chase Ink Business Unlimited
+      {
+        id: 'chase_ink_business_unlimited',
+        name: 'Chase Ink Business Unlimited',
+        network: 'Visa',
+        issuer: 'Chase',
+        annual_fee: 0,
+        reward_rates: {
+          other: 1.5
+        },
+        signup_bonus: {
+          points: 75000,
+          spend_required: 6000,
+          months: 3,
+          value: 750
+        },
+        perks: [
+          '75,000 bonus points after $6,000 spend in first 3 months',
+          'Unlimited 1.5% cash back on all purchases',
+          'Points can be transferred to Sapphire cards for travel redemption',
+          'Employee cards at no additional cost',
+          'Intro 0% APR for 12 months on purchases',
+          'Purchase protection',
+          'Extended warranty protection'
+        ],
+        benefits: {
+          purchase_protection: true,
+          extended_warranty: true
+        },
+        fees: {
+          foreign_transaction: 3,
+          cash_advance: 5,
+          late_payment: 40,
+          over_limit: 0
+        },
+        redemption: {
+          options: ['cash_back', 'gift_cards', 'travel', 'transfers'],
+          best_value: 'transfers_via_sapphire'
+        },
+        categories: ['business', 'cash_back', 'all_purpose'],
+        credit_score_required: 'good',
+        recommended_for: ['Small businesses', 'Simple earners', 'All-purpose business spending']
+      }
+    );
+    
+    // Capital One Cards (9-14)
+    this.cards.push(
+      // 9. Capital One Venture
+      {
+        id: 'capital_one_venture',
+        name: 'Capital One Venture Rewards',
+        network: 'Mastercard',
+        issuer: 'Capital One',
+        annual_fee: 95,
+        reward_rates: {
+          all_purchases: 2
+        },
+        signup_bonus: {
+          miles: 75000,
+          spend_required: 4000,
+          months: 3,
+          value: 750
+        },
+        perks: [
+          '75,000 bonus miles after $4,000 spend in first 3 months',
+          'Unlimited 2x miles on every purchase',
+          '10x miles on hotels and rental cars booked through Capital One Travel',
+          '5x miles on flights booked through Capital One Travel',
+          'Transfer miles to 15+ travel loyalty programs',
+          'No blackout dates',
+          'Travel accident insurance',
+          'Concierge service',
+          'No foreign transaction fees'
+        ],
+        benefits: {
+          travel_insurance: true,
+          purchase_protection: true,
+          extended_warranty: true
+        },
+        fees: {
+          foreign_transaction: 0,
+          cash_advance: 3,
+          late_payment: 40,
+          over_limit: 0
+        },
+        redemption: {
+          options: ['travel', 'cash_back', 'transfers'],
+          best_value: 'travel_transfers',
+          transfer_partners: ['Avianca', 'Accor', 'All Nippon Airways', 'Air Canada', 'British Airways', 'Emirates']
+        },
+        categories: ['travel', 'all_purpose'],
+        credit_score_required: 'good',
+        recommended_for: ['All-purpose travelers', 'Simple earners', 'Flexible redeemers']
+      },
+      
+      // 10. Capital One Venture X
+      {
+        id: 'capital_one_venture_x',
+        name: 'Capital One Venture X Rewards',
+        network: 'Visa',
+        issuer: 'Capital One',
+        annual_fee: 395,
+        reward_rates: {
+          all_purchases: 2,
+          travel: 10
+        },
+        signup_bonus: {
+          miles: 75000,
+          spend_required: 4000,
+          months: 3,
+          value: 750
+        },
+        perks: [
+          '75,000 bonus miles after $4,000 spend in first 3 months',
+          'Unlimited 2x miles on every purchase',
+          '10x miles on hotels and rental cars booked through Capital One Travel',
+          '5x miles on flights booked through Capital One Travel',
+          '$300 annual travel credit',
+          '10,000 bonus miles every account anniversary',
+          'Priority Pass Select membership',
+          'Capital One lounge access',
+          'Global Entry/TSA PreCheck credit (up to $100 every 4 years)',
+          'Hertz President\'s Circle status',
+          'Transfer miles to 15+ travel loyalty programs',
+          'No foreign transaction fees'
+        ],
+        benefits: {
+          travel_insurance: true,
+          purchase_protection: true,
+          extended_warranty: true,
+          airport_lounge_access: true,
+          concierge_service: true
+        },
+        fees: {
+          foreign_transaction: 0,
+          cash_advance: 3,
+          late_payment: 40,
+          over_limit: 0
+        },
+        redemption: {
+          options: ['travel', 'cash_back', 'transfers'],
+          best_value: 'travel_transfers',
+          transfer_partners: ['Avianca', 'Accor', 'All Nippon Airways', 'Air Canada', 'British Airways', 'Emirates']
+        },
+        categories: ['travel', 'premium', 'all_purpose'],
+        credit_score_required: 'excellent',
+        recommended_for: ['Premium travelers', 'Lounge enthusiasts', 'Frequent flyers']
+      },
+      
+      // 11. Capital One Savor
+      {
+        id: 'capital_one_savor',
+        name: 'Capital One Savor Cash Rewards',
+        network: 'Mastercard',
+        issuer: 'Capital One',
+        annual_fee: 95,
+        reward_rates: {
+          dining: 4,
+          entertainment: 4,
+          groceries: 2,
+          other: 1
+        },
+        signup_bonus: {
+          points: 300,
+          spend_required: 3000,
+          months: 3,
+          value: 300
+        },
+        perks: [
+          '$300 cash bonus after $3,000 spend in first 3 months',
+          '4% cash back on dining',
+          '4% cash back on entertainment',
+          '2% cash back at grocery stores',
+          '1% cash back on all other purchases',
+          'No foreign transaction fees'
+        ],
+        benefits: {
+          purchase_protection: true,
+          extended_warranty: true
+        },
+        fees: {
+          foreign_transaction: 0,
+          cash_advance: 3,
+          late_payment: 40,
+          over_limit: 0
+        },
+        redemption: {
+          options: ['cash_back', 'check', 'statement_credit'],
+          best_value: 'cash_back'
+        },
+        categories: ['dining', 'entertainment', 'cash_back'],
+        credit_score_required: 'good',
+        recommended_for: ['Food lovers', 'Entertainment seekers', 'Dining enthusiasts']
+      },
+      
+      // 12. Capital One SavorOne
+      {
+        id: 'capital_one_savorone',
+        name: 'Capital One SavorOne Cash Rewards',
+        network: 'Mastercard',
+        issuer: 'Capital One',
+        annual_fee: 0,
+        reward_rates: {
+          dining: 3,
+          entertainment: 3,
+          groceries: 3,
+          other: 1
+        },
+        signup_bonus: {
+          points: 200,
+          spend_required: 500,
+          months: 3,
+          value: 200
+        },
+        perks: [
+          '$200 cash bonus after $500 spend in first 3 months',
+          '3% cash back on dining',
+          '3% cash back on entertainment',
+          '3% cash back at grocery stores',
+          '1% cash back on all other purchases',
+          'Intro 0% APR for 15 months on purchases',
+          'No foreign transaction fees'
+        ],
+        benefits: {
+          purchase_protection: true,
+          extended_warranty: true
+        },
+        fees: {
+          foreign_transaction: 0,
+          cash_advance: 3,
+          late_payment: 40,
+          over_limit: 0
+        },
+        redemption: {
+          options: ['cash_back', 'check', 'statement_credit'],
+          best_value: 'cash_back'
+        },
+        categories: ['dining', 'entertainment', 'groceries', 'cash_back'],
+        credit_score_required: 'good',
+        recommended_for: ['Food lovers', 'No annual fee seekers', 'Entertainment enthusiasts']
+      },
+      
+      // 13. Capital One Quicksilver
+      {
+        id: 'capital_one_quicksilver',
+        name: 'Capital One Quicksilver Cash Rewards',
+        network: 'Mastercard',
+        issuer: 'Capital One',
+        annual_fee: 0,
+        reward_rates: {
+          all_purchases: 1.5
+        },
+        signup_bonus: {
+          points: 200,
+          spend_required: 500,
+          months: 3,
+          value: 200
+        },
+        perks: [
+          '$200 cash bonus after $500 spend in first 3 months',
+          'Unlimited 1.5% cash back on every purchase',
+          'Intro 0% APR for 15 months on purchases and balance transfers',
+          'No foreign transaction fees'
+        ],
+        benefits: {
+          purchase_protection: true,
+          extended_warranty: true
+        },
+        fees: {
+          foreign_transaction: 0,
+          cash_advance: 3,
+          late_payment: 40,
+          over_limit: 0
+        },
+        redemption: {
+          options: ['cash_back', 'check', 'statement_credit'],
+          best_value: 'cash_back'
+        },
+        categories: ['cash_back', 'all_purpose'],
+        credit_score_required: 'good',
+        recommended_for: ['Simple earners', 'No-hassle cash back', 'Everyday spenders']
+      },
+      
+      // 14. Capital One Platinum
+      {
+        id: 'capital_one_platinum',
+        name: 'Capital One Platinum',
+        network: 'Mastercard',
+        issuer: 'Capital One',
+        annual_fee: 0,
+        reward_rates: {},
+        signup_bonus: null,
+        perks: [
+          'No annual fee',
+          'Credit limit increase after 6 months of on-time payments',
+          'Intro 0% APR for 15 months on purchases',
+          'CreditWise credit score monitoring',
+          'No foreign transaction fees'
+        ],
+        benefits: {},
+        fees: {
+          foreign_transaction: 0,
+          cash_advance: 3,
+          late_payment: 40,
+          over_limit: 0
+        },
+        redemption: {
+          options: []
+        },
+        categories: ['credit_building'],
+        credit_score_required: 'fair',
+        recommended_for: ['Credit building', 'First-time cardholders', 'Building credit history']
+      }
+    );
+    
+    // Citi Cards (15-18)
+    this.cards.push(
+      // 15. Citi Double Cash
+      {
+        id: 'citi_double_cash',
+        name: 'Citi Double Cash Card',
+        network: 'Mastercard',
+        issuer: 'Citi',
+        annual_fee: 0,
+        reward_rates: { all_purchases: 2 },
+        signup_bonus: { points: 200, spend_required: 500, months: 3, value: 200 },
+        perks: [
+          '$200 bonus after $1,500 spend in 6 months',
+          '2% cash back - 1% when you buy, 1% when you pay',
+          'No categories to track',
+          'Intro 0% APR for 18 months',
+          'Citi Entertainment access'
+        ],
+        benefits: { purchase_protection: true, extended_warranty: true },
+        fees: { foreign_transaction: 3, cash_advance: 5, late_payment: 40, over_limit: 0 },
+        redemption: { options: ['cash_back', 'statement_credit', 'check'], best_value: 'cash_back' },
+        categories: ['cash_back', 'all_purpose'],
+        credit_score_required: 'good',
+        recommended_for: ['Simple spenders', 'Cash back lovers', 'No-hassle earners']
+      },
+      
+      // 16. Citi Premier
+      {
+        id: 'citi_premier',
+        name: 'Citi Premier Card',
+        network: 'Mastercard',
+        issuer: 'Citi',
+        annual_fee: 95,
+        reward_rates: { dining: 3, groceries: 3, gas: 3, airfare: 3, hotels: 3, other: 1 },
+        signup_bonus: { points: 60000, spend_required: 4000, months: 3, value: 600 },
+        perks: [
+          '60,000 bonus ThankYou points after $4,000 spend in first 3 months',
+          '3x points at restaurants, supermarkets, gas stations, air travel, and hotels',
+          '1x points on all other purchases',
+          'Transfer points to airline and hotel partners',
+          'No foreign transaction fees'
+        ],
+        benefits: { travel_insurance: true, purchase_protection: true, extended_warranty: true },
+        fees: { foreign_transaction: 0, cash_advance: 5, late_payment: 40, over_limit: 0 },
+        redemption: {
+          options: ['travel', 'cash_back', 'gift_cards', 'transfers'],
+          best_value: 'travel_transfers',
+          transfer_partners: ['JetBlue', 'Cathay Pacific', 'Turkish Airlines', 'Choice Hotels']
+        },
+        categories: ['travel', 'dining', 'groceries', 'gas'],
+        credit_score_required: 'good',
+        recommended_for: ['Travel enthusiasts', 'Dining lovers', 'Flexible redeemers']
+      },
+      
+      // 17. Citi Custom Cash
+      {
+        id: 'citi_custom_cash',
+        name: 'Citi Custom Cash Card',
+        network: 'Mastercard',
+        issuer: 'Citi',
+        annual_fee: 0,
+        reward_rates: { top_category: 5, other: 1 },
+        signup_bonus: { points: 200, spend_required: 500, months: 3, value: 200 },
+        perks: [
+          '$200 bonus after $750 spend in first 3 months',
+          '5% cash back on purchases in your top eligible spending category each billing cycle (up to $500 spent)',
+          '1% cash back on all other purchases',
+          'Intro 0% APR for 15 months on purchases',
+          'No categories to activate'
+        ],
+        benefits: { purchase_protection: true, extended_warranty: true },
+        fees: { foreign_transaction: 3, cash_advance: 5, late_payment: 40, over_limit: 0 },
+        redemption: { options: ['cash_back', 'statement_credit', 'check'], best_value: 'cash_back' },
+        categories: ['cash_back', 'flexible'],
+        credit_score_required: 'good',
+        recommended_for: ['Category optimizers', 'Flexible spenders', 'Cash back seekers']
+      },
+      
+      // 18. Citi Rewards+
+      {
+        id: 'citi_rewards_plus',
+        name: 'Citi Rewards+ Card',
+        network: 'Mastercard',
+        issuer: 'Citi',
+        annual_fee: 0,
+        reward_rates: { groceries: 2, gas: 2, other: 1 },
+        signup_bonus: { points: 20000, spend_required: 1500, months: 3, value: 200 },
+        perks: [
+          '20,000 bonus ThankYou points after $1,500 spend in first 3 months',
+          '2x points at supermarkets and gas stations',
+          '1x points on all other purchases',
+          'Round Up to nearest 10 points on every purchase',
+          'Intro 0% APR for 15 months on purchases'
+        ],
+        benefits: { purchase_protection: true, extended_warranty: true },
+        fees: { foreign_transaction: 3, cash_advance: 5, late_payment: 40, over_limit: 0 },
+        redemption: { options: ['cash_back', 'gift_cards', 'travel'], best_value: 'travel' },
+        categories: ['cash_back', 'groceries', 'gas'],
+        credit_score_required: 'good',
+        recommended_for: ['Everyday spenders', 'Grocery shoppers', 'Point maximizers']
+      }
+    );
+    
+    // Bank of America Cards (19-21)
+    this.cards.push(
+      // 19. Bank of America Customized Cash Rewards
+      {
+        id: 'boa_customized_cash_rewards',
+        name: 'Bank of America Customized Cash Rewards',
+        network: 'Visa',
+        issuer: 'Bank of America',
+        annual_fee: 0,
+        reward_rates: { selected_category: 3, wholesale_clubs: 2, other: 1 },
+        signup_bonus: { points: 200, spend_required: 1000, months: 3, value: 200 },
+        perks: [
+          '$200 online cash rewards bonus after $1,000 spend in first 90 days',
+          '3% cash back in category of choice (gas, online shopping, dining, travel, drug stores, or home improvement)',
+          '2% cash back at grocery stores and wholesale clubs',
+          '1% cash back on all other purchases',
+          'Can change category once per month'
+        ],
+        benefits: { purchase_protection: true, extended_warranty: true },
+        fees: { foreign_transaction: 3, cash_advance: 5, late_payment: 40, over_limit: 0 },
+        redemption: { options: ['cash_back', 'check', 'deposit'], best_value: 'cash_back' },
+        categories: ['cash_back', 'flexible'],
+        credit_score_required: 'good',
+        recommended_for: ['Category maximizers', 'Flexible spenders', 'Cash back seekers']
+      },
+      
+      // 20. Bank of America Unlimited Cash Rewards
+      {
+        id: 'boa_unlimited_cash_rewards',
+        name: 'Bank of America Unlimited Cash Rewards',
+        network: 'Visa',
+        issuer: 'Bank of America',
+        annual_fee: 0,
+        reward_rates: { other: 1.5 },
+        signup_bonus: { points: 200, spend_required: 1000, months: 3, value: 200 },
+        perks: [
+          '$200 online cash rewards bonus after $1,000 spend in first 90 days',
+          'Unlimited 1.5% cash back on all purchases',
+          'Intro 0% APR for 15 billing cycles on purchases',
+          'No categories to track'
+        ],
+        benefits: { purchase_protection: true, extended_warranty: true },
+        fees: { foreign_transaction: 3, cash_advance: 5, late_payment: 40, over_limit: 0 },
+        redemption: { options: ['cash_back', 'check', 'deposit'], best_value: 'cash_back' },
+        categories: ['cash_back', 'all_purpose'],
+        credit_score_required: 'good',
+        recommended_for: ['Simple earners', 'No-hassle cash back', 'Everyday spenders']
+      },
+      
+      // 21. Bank of America Travel Rewards
+      {
+        id: 'boa_travel_rewards',
+        name: 'Bank of America Travel Rewards',
+        network: 'Visa',
+        issuer: 'Bank of America',
+        annual_fee: 0,
+        reward_rates: { other: 1.5 },
+        signup_bonus: { points: 25000, spend_required: 1000, months: 3, value: 250 },
+        perks: [
+          '25,000 bonus points after $1,000 spend in first 90 days',
+          'Unlimited 1.5 points per $1 on all purchases',
+          'No blackout dates',
+          'No expiration on points',
+          'Intro 0% APR for 18 billing cycles on purchases'
+        ],
+        benefits: { travel_insurance: true },
+        fees: { foreign_transaction: 0, cash_advance: 5, late_payment: 40, over_limit: 0 },
+        redemption: { options: ['travel', 'cash_back'], best_value: 'travel' },
+        categories: ['travel', 'all_purpose'],
+        credit_score_required: 'good',
+        recommended_for: ['Travel lovers', 'Simple earners', 'No annual fee travelers']
+      }
+    );
+    
+    // Wells Fargo Cards (22-24)
+    this.cards.push(
+      // 22. Wells Fargo Active Cash
+      {
+        id: 'wells_fargo_active_cash',
+        name: 'Wells Fargo Active Cash Card',
+        network: 'Visa',
+        issuer: 'Wells Fargo',
+        annual_fee: 0,
+        reward_rates: { other: 2 },
+        signup_bonus: { points: 200, spend_required: 1000, months: 3, value: 200 },
+        perks: [
+          '$200 cash rewards bonus after $1,000 spend in first 3 months',
+          'Unlimited 2% cash rewards on purchases',
+          'Intro 0% APR for 15 months on purchases and balance transfers',
+          'Cell phone protection',
+          'No categories to track'
+        ],
+        benefits: { purchase_protection: true, extended_warranty: true, cell_phone_protection: true },
+        fees: { foreign_transaction: 3, cash_advance: 5, late_payment: 40, over_limit: 0 },
+        redemption: { options: ['cash_back', 'check', 'gift_cards'], best_value: 'cash_back' },
+        categories: ['cash_back', 'all_purpose'],
+        credit_score_required: 'good',
+        recommended_for: ['Simple earners', 'Cash back lovers', 'All-purpose spenders']
+      },
+      
+      // 23. Wells Fargo Autograph
+      {
+        id: 'wells_fargo_autograph',
+        name: 'Wells Fargo Autograph Card',
+        network: 'Visa',
+        issuer: 'Wells Fargo',
+        annual_fee: 0,
+        reward_rates: { restaurants: 3, travel: 3, gas: 3, transit: 3, streaming: 3, phone: 3, other: 1 },
+        signup_bonus: { points: 20000, spend_required: 1000, months: 3, value: 200 },
+        perks: [
+          '20,000 bonus points after $1,000 spend in first 3 months',
+          '3x points on restaurants, travel, gas stations, transit, popular streaming services, and phone plans',
+          '1x points on all other purchases',
+          'Cell phone protection',
+          'Intro 0% APR for 12 months on purchases'
+        ],
+        benefits: { purchase_protection: true, extended_warranty: true, cell_phone_protection: true },
+        fees: { foreign_transaction: 0, cash_advance: 5, late_payment: 40, over_limit: 0 },
+        redemption: { options: ['cash_back', 'travel', 'gift_cards'], best_value: 'cash_back' },
+        categories: ['dining', 'travel', 'gas', 'transit'],
+        credit_score_required: 'good',
+        recommended_for: ['Dining lovers', 'Travel enthusiasts', 'Gas spenders']
+      },
+      
+      // 24. Wells Fargo Reflect
+      {
+        id: 'wells_fargo_reflect',
+        name: 'Wells Fargo Reflect Card',
+        network: 'Visa',
+        issuer: 'Wells Fargo',
+        annual_fee: 0,
+        reward_rates: {},
+        signup_bonus: null,
+        perks: [
+          'Intro 0% APR for up to 21 months on purchases and balance transfers',
+          'No annual fee',
+          'My Wells Fargo Deals discounts',
+          'Zero liability protection'
+        ],
+        benefits: {},
+        fees: { foreign_transaction: 3, cash_advance: 5, late_payment: 40, over_limit: 0 },
+        redemption: { options: [] },
+        categories: ['balance_transfer', 'low_interest'],
+        credit_score_required: 'good',
+        recommended_for: ['Balance transfers', 'Low interest seekers', 'Debt consolidation']
+      }
+    );
+    
+    // U.S. Bank Cards (25-27)
+    this.cards.push(
+      // 25. U.S. Bank Cash+
+      {
+        id: 'us_bank_cash_plus',
+        name: 'U.S. Bank Cash+ Visa Signature',
+        network: 'Visa',
+        issuer: 'U.S. Bank',
+        annual_fee: 0,
+        reward_rates: { selected_categories: 5, selected_category: 2, other: 1 },
+        signup_bonus: { points: 200, spend_required: 500, months: 3, value: 200 },
+        perks: [
+          '$200 bonus after $500 spend in first 90 days',
+          '5% cash back on first $2,000 of combined purchases each quarter on two categories you choose',
+          '2% cash back on one everyday category (gas stations, grocery stores, or restaurants)',
+          '1% cash back on all other purchases',
+          'No categories to activate'
+        ],
+        benefits: { purchase_protection: true, extended_warranty: true },
+        fees: { foreign_transaction: 3, cash_advance: 5, late_payment: 40, over_limit: 0 },
+        redemption: { options: ['cash_back', 'check', 'gift_cards'], best_value: 'cash_back' },
+        categories: ['cash_back', 'flexible'],
+        credit_score_required: 'good',
+        recommended_for: ['Category maximizers', 'Strategic spenders', 'Cash back enthusiasts']
+      },
+      
+      // 26. U.S. Bank Altitude Reserve
+      {
+        id: 'us_bank_altitude_reserve',
+        name: 'U.S. Bank Altitude Reserve Visa Infinite',
+        network: 'Visa',
+        issuer: 'U.S. Bank',
+        annual_fee: 400,
+        reward_rates: { travel: 5, mobile_wallet: 5, other: 1 },
+        signup_bonus: { points: 50000, spend_required: 4500, months: 3, value: 750 },
+        perks: [
+          '50,000 bonus points after $4,500 spend in first 90 days',
+          '5x points on prepaid hotels and car rentals booked through Altitude Rewards Center',
+          '5x points (3x points + 2x points) on travel and mobile wallet purchases',
+          '3x points on all other eligible travel purchases',
+          '$325 annual travel and dining credit',
+          'Priority Pass Select membership',
+          'Global Entry/TSA PreCheck credit (up to $100 every 4 years)',
+          '12x points per dollar at U.S. Bank sports complexes',
+          'No foreign transaction fees'
+        ],
+        benefits: {
+          travel_insurance: true,
+          rental_car_insurance: true,
+          airport_lounge_access: true,
+          purchase_protection: true,
+          extended_warranty: true
+        },
+        fees: { foreign_transaction: 0, cash_advance: 5, late_payment: 40, over_limit: 0 },
+        redemption: { options: ['travel', 'cash_back', 'gift_cards'], best_value: 'travel' },
+        categories: ['travel', 'premium', 'mobile_wallet'],
+        credit_score_required: 'excellent',
+        recommended_for: ['Premium travelers', 'Mobile wallet users', 'Lounge enthusiasts']
+      },
+      
+      // 27. U.S. Bank Altitude Go
+      {
+        id: 'us_bank_altitude_go',
+        name: 'U.S. Bank Altitude Go Visa Signature',
+        network: 'Visa',
+        issuer: 'U.S. Bank',
+        annual_fee: 0,
+        reward_rates: { dining: 4, grocery_stores: 2, gas_stations: 2, streaming: 1, other: 1 },
+        signup_bonus: { points: 20000, spend_required: 1000, months: 3, value: 200 },
+        perks: [
+          '20,000 bonus points after $1,000 spend in first 90 days',
+          '4x points on dining, takeout, and restaurant delivery',
+          '2x points at grocery stores, grocery delivery, streaming services, and gas stations',
+          '1x points on all other purchases',
+          '$15 annual streaming credit',
+          'No foreign transaction fees'
+        ],
+        benefits: { purchase_protection: true, extended_warranty: true },
+        fees: { foreign_transaction: 0, cash_advance: 5, late_payment: 40, over_limit: 0 },
+        redemption: { options: ['cash_back', 'travel', 'gift_cards'], best_value: 'cash_back' },
+        categories: ['dining', 'groceries', 'gas'],
+        credit_score_required: 'good',
+        recommended_for: ['Dining lovers', 'Grocery shoppers', 'Food enthusiasts']
+      }
+    );
+    
+    // American Express Cards (28-41)
+    this.cards.push(
+      // 28. American Express Platinum
+      {
+        id: 'amex_platinum',
+        name: 'The Platinum Card from American Express',
+        network: 'American Express',
+        issuer: 'American Express',
+        annual_fee: 695,
+        reward_rates: { flights: 5, hotels: 5, other: 1 },
+        signup_bonus: { points: 80000, spend_required: 6000, months: 6, value: 800 },
+        perks: [
+          '80,000 Membership Rewards points after $6,000 spend in first 6 months',
+          '5x points on flights booked directly with airlines or through Amex Travel',
+          '5x points on prepaid hotels booked through Amex Travel',
+          '$200 annual airline fee credit',
+          '$200 annual Uber Cash credit',
+          '$240 annual digital entertainment credit',
+          '$300 annual Equinox credit',
+          'Clear Plus membership credit',
+          'Global Entry/TSA PreCheck credit (up to $100 every 4 years)',
+          'Priority Pass Select membership',
+          'Centurion Lounge access',
+          'Delta Sky Club access',
+          'Transfer points to airline and hotel partners',
+          'No foreign transaction fees'
+        ],
+        benefits: {
+          travel_insurance: true,
+          concierge_service: true,
+          airport_lounge_access: true,
+          purchase_protection: true,
+          extended_warranty: true
+        },
+        fees: { foreign_transaction: 0, cash_advance: 5, late_payment: 39, over_limit: 0 },
+        redemption: {
+          options: ['travel', 'transfers', 'gift_cards'],
+          best_value: 'travel_transfers',
+          transfer_partners: ['Delta', 'Marriott', 'Hilton', 'Virgin Atlantic', 'British Airways', 'Singapore Airlines']
+        },
+        categories: ['travel', 'luxury'],
+        credit_score_required: 'excellent',
+        recommended_for: ['Luxury travelers', 'Frequent flyers', 'Premium consumers']
+      },
+      
+      // 29. American Express Gold (already in base cards, but ensuring it's here)
+      {
+        id: 'amex_gold',
+        name: 'American Express Gold Card',
+        network: 'American Express',
+        issuer: 'American Express',
+        annual_fee: 250,
+        reward_rates: { dining: 4, groceries: 4, flights: 3, other: 1 },
+        signup_bonus: { points: 60000, spend_required: 4000, months: 6, value: 600 },
+        perks: [
+          '60,000 Membership Rewards points after $4,000 spend in first 6 months',
+          '4x points at restaurants worldwide',
+          '4x points at U.S. supermarkets (up to $25,000 per year)',
+          '3x points on flights booked directly with airlines',
+          '$10 monthly dining credit (up to $120 per year)',
+          '$10 monthly Uber Cash credit (up to $120 per year)',
+          'Car rental loss and damage insurance',
+          'No foreign transaction fees'
+        ],
+        benefits: {
+          travel_insurance: true,
+          rental_car_insurance: true,
+          purchase_protection: true,
+          extended_warranty: true,
+          return_protection: true
+        },
+        fees: { foreign_transaction: 0, cash_advance: 5, late_payment: 39, over_limit: 0 },
+        redemption: {
+          options: ['travel', 'cash_back', 'gift_cards', 'transfers', 'amazon'],
+          best_value: 'travel_transfers',
+          transfer_partners: ['Delta', 'British Airways', 'Hilton', 'Marriott']
+        },
+        categories: ['dining', 'groceries', 'travel'],
+        credit_score_required: 'good',
+        recommended_for: ['Food lovers', 'Grocery shoppers', 'Frequent travelers']
+      },
+      
+      // 30. American Express Green
+      {
+        id: 'amex_green',
+        name: 'American Express Green Card',
+        network: 'American Express',
+        issuer: 'American Express',
+        annual_fee: 150,
+        reward_rates: { travel: 3, transit: 3, dining: 3, other: 1 },
+        signup_bonus: { points: 40000, spend_required: 3000, months: 6, value: 400 },
+        perks: [
+          '40,000 Membership Rewards points after $3,000 spend in first 6 months',
+          '3x points on travel and transit purchases',
+          '3x points on dining purchases',
+          '$189 annual Clear credit',
+          '$100 annual LoungeBuddy credit',
+          'Transfer points to airline and hotel partners',
+          'No foreign transaction fees'
+        ],
+        benefits: {
+          travel_insurance: true,
+          purchase_protection: true,
+          extended_warranty: true
+        },
+        fees: { foreign_transaction: 0, cash_advance: 5, late_payment: 39, over_limit: 0 },
+        redemption: {
+          options: ['travel', 'cash_back', 'gift_cards', 'transfers'],
+          best_value: 'travel_transfers',
+          transfer_partners: ['Delta', 'British Airways', 'Hilton', 'Marriott']
+        },
+        categories: ['travel', 'transit', 'dining'],
+        credit_score_required: 'good',
+        recommended_for: ['Travel enthusiasts', 'Commute spenders', 'Dining lovers']
+      },
+      
+      // 31. Amex Blue Cash Preferred
+      {
+        id: 'amex_blue_cash_preferred',
+        name: 'Blue Cash Preferred Card from American Express',
+        network: 'American Express',
+        issuer: 'American Express',
+        annual_fee: 95,
+        reward_rates: { groceries: 6, streaming: 6, transit: 3, gas: 3, other: 1 },
+        signup_bonus: { points: 250, spend_required: 3000, months: 6, value: 250 },
+        perks: [
+          '$250 statement credit after $3,000 spend in first 6 months',
+          '6% cash back at U.S. supermarkets (up to $6,000 per year)',
+          '6% cash back on select U.S. streaming subscriptions',
+          '3% cash back at U.S. gas stations and on transit',
+          '1% cash back on all other purchases',
+          'Intro 0% APR for 12 months on purchases'
+        ],
+        benefits: { purchase_protection: true, extended_warranty: true },
+        fees: { foreign_transaction: 0, cash_advance: 5, late_payment: 39, over_limit: 0 },
+        redemption: { options: ['cash_back', 'statement_credit'], best_value: 'cash_back' },
+        categories: ['groceries', 'streaming', 'gas', 'cash_back'],
+        credit_score_required: 'good',
+        recommended_for: ['Grocery shoppers', 'Streaming users', 'Gas spenders']
+      },
+      
+      // 32. Amex Blue Cash Everyday
+      {
+        id: 'amex_blue_cash_everyday',
+        name: 'Blue Cash Everyday Card from American Express',
+        network: 'American Express',
+        issuer: 'American Express',
+        annual_fee: 0,
+        reward_rates: { groceries: 3, gas: 3, online_retail: 3, other: 1 },
+        signup_bonus: { points: 200, spend_required: 2000, months: 6, value: 200 },
+        perks: [
+          '$200 statement credit after $2,000 spend in first 6 months',
+          '3% cash back at U.S. supermarkets (up to $6,000 per year)',
+          '3% cash back at U.S. gas stations',
+          '3% cash back on U.S. online retail purchases (up to $6,000 per year)',
+          '1% cash back on all other purchases',
+          'Intro 0% APR for 15 months on purchases'
+        ],
+        benefits: { purchase_protection: true, extended_warranty: true },
+        fees: { foreign_transaction: 0, cash_advance: 5, late_payment: 39, over_limit: 0 },
+        redemption: { options: ['cash_back', 'statement_credit'], best_value: 'cash_back' },
+        categories: ['groceries', 'gas', 'online_shopping', 'cash_back'],
+        credit_score_required: 'good',
+        recommended_for: ['Grocery shoppers', 'Online shoppers', 'Gas spenders']
+      },
+      
+      // 33. Amex EveryDay
+      {
+        id: 'amex_everyday',
+        name: 'EveryDay Credit Card from American Express',
+        network: 'American Express',
+        issuer: 'American Express',
+        annual_fee: 0,
+        reward_rates: { groceries: 2, other: 1 },
+        signup_bonus: { points: 10000, spend_required: 1000, months: 3, value: 100 },
+        perks: [
+          '10,000 Membership Rewards points after $1,000 spend in first 3 months',
+          '2x points at U.S. supermarkets (up to $6,000 per year)',
+          '1x points on all other purchases',
+          '20% bonus points when you make 20+ transactions per billing period',
+          'Transfer points to airline and hotel partners'
+        ],
+        benefits: { purchase_protection: true, extended_warranty: true },
+        fees: { foreign_transaction: 0, cash_advance: 5, late_payment: 39, over_limit: 0 },
+        redemption: {
+          options: ['travel', 'cash_back', 'gift_cards', 'transfers'],
+          best_value: 'travel_transfers',
+          transfer_partners: ['Delta', 'British Airways', 'Hilton', 'Marriott']
+        },
+        categories: ['groceries', 'points'],
+        credit_score_required: 'good',
+        recommended_for: ['Grocery shoppers', 'Point maximizers', 'Frequent spenders']
+      },
+      
+      // 34. Amex EveryDay Preferred
+      {
+        id: 'amex_everyday_preferred',
+        name: 'EveryDay Preferred Credit Card from American Express',
+        network: 'American Express',
+        issuer: 'American Express',
+        annual_fee: 95,
+        reward_rates: { groceries: 3, gas: 2, other: 1 },
+        signup_bonus: { points: 15000, spend_required: 1000, months: 3, value: 150 },
+        perks: [
+          '15,000 Membership Rewards points after $1,000 spend in first 3 months',
+          '3x points at U.S. supermarkets (up to $6,000 per year)',
+          '2x points at U.S. gas stations',
+          '1x points on all other purchases',
+          '50% bonus points when you make 30+ transactions per billing period',
+          'Transfer points to airline and hotel partners'
+        ],
+        benefits: { purchase_protection: true, extended_warranty: true },
+        fees: { foreign_transaction: 0, cash_advance: 5, late_payment: 39, over_limit: 0 },
+        redemption: {
+          options: ['travel', 'cash_back', 'gift_cards', 'transfers'],
+          best_value: 'travel_transfers',
+          transfer_partners: ['Delta', 'British Airways', 'Hilton', 'Marriott']
+        },
+        categories: ['groceries', 'gas', 'points'],
+        credit_score_required: 'good',
+        recommended_for: ['Grocery shoppers', 'Gas spenders', 'Point maximizers']
+      }
+    );
+    
+    // Adding airline and hotel co-branded cards (35-50)
+    this.cards.push(
+      // 35-37: Delta Cards
+      {
+        id: 'amex_delta_skymiles_gold',
+        name: 'Delta SkyMiles Gold American Express Card',
+        network: 'American Express',
+        issuer: 'American Express',
+        annual_fee: 0,
+        reward_rates: { delta_purchases: 2, dining: 2, groceries: 2, other: 1 },
+        signup_bonus: { miles: 50000, spend_required: 2000, months: 3, value: 500 },
+        perks: [
+          '50,000 bonus miles after $2,000 spend in first 3 months',
+          '2x miles on Delta purchases',
+          '2x miles at restaurants worldwide',
+          '2x miles at U.S. supermarkets',
+          '1x miles on all other purchases',
+          'First checked bag free',
+          'Main Cabin 1 priority boarding',
+          '20% savings on in-flight purchases',
+          'No foreign transaction fees'
+        ],
+        benefits: { travel_insurance: true },
+        fees: { foreign_transaction: 0, cash_advance: 5, late_payment: 39, over_limit: 0 },
+        redemption: { options: ['travel', 'delta'], best_value: 'delta' },
+        categories: ['travel', 'airline', 'delta'],
+        credit_score_required: 'good',
+        recommended_for: ['Delta flyers', 'Frequent Delta travelers', 'Bag check users']
+      },
+      {
+        id: 'amex_delta_skymiles_platinum',
+        name: 'Delta SkyMiles Platinum American Express Card',
+        network: 'American Express',
+        issuer: 'American Express',
+        annual_fee: 250,
+        reward_rates: { delta_purchases: 3, hotels: 3, restaurants: 2, groceries: 2, other: 1 },
+        signup_bonus: { miles: 50000, spend_required: 3000, months: 3, value: 500 },
+        perks: [
+          '50,000 bonus miles after $3,000 spend in first 3 months',
+          '3x miles on Delta purchases',
+          '3x miles on hotel purchases',
+          '2x miles at restaurants worldwide',
+          '2x miles at U.S. supermarkets',
+          '1x miles on all other purchases',
+          'First checked bag free',
+          'Main Cabin 1 priority boarding',
+          'Companion certificate (main cabin)',
+          'Delta Sky Club access (when flying Delta)',
+          'Global Entry/TSA PreCheck credit (up to $100 every 4 years)',
+          'No foreign transaction fees'
+        ],
+        benefits: { travel_insurance: true, airport_lounge_access: true },
+        fees: { foreign_transaction: 0, cash_advance: 5, late_payment: 39, over_limit: 0 },
+        redemption: { options: ['travel', 'delta'], best_value: 'delta' },
+        categories: ['travel', 'airline', 'delta', 'premium'],
+        credit_score_required: 'good',
+        recommended_for: ['Delta flyers', 'Lounge users', 'Companion travelers']
+      },
+      {
+        id: 'amex_delta_skymiles_reserve',
+        name: 'Delta SkyMiles Reserve American Express Card',
+        network: 'American Express',
+        issuer: 'American Express',
+        annual_fee: 550,
+        reward_rates: { delta_purchases: 3, other: 1 },
+        signup_bonus: { miles: 50000, spend_required: 5000, months: 3, value: 500 },
+        perks: [
+          '50,000 bonus miles after $5,000 spend in first 3 months',
+          '3x miles on Delta purchases',
+          '1x miles on all other purchases',
+          'First checked bag free',
+          'Main Cabin 1 priority boarding',
+          'Companion certificate (first class, Comfort+, or main cabin)',
+          'Delta Sky Club access',
+          'Centurion Lounge access',
+          'Global Entry/TSA PreCheck credit (up to $100 every 4 years)',
+          'Upgrade priority',
+          'No foreign transaction fees'
+        ],
+        benefits: {
+          travel_insurance: true,
+          airport_lounge_access: true,
+          concierge_service: true
+        },
+        fees: { foreign_transaction: 0, cash_advance: 5, late_payment: 39, over_limit: 0 },
+        redemption: { options: ['travel', 'delta'], best_value: 'delta' },
+        categories: ['travel', 'airline', 'delta', 'premium'],
+        credit_score_required: 'excellent',
+        recommended_for: ['Frequent Delta flyers', 'Premium travelers', 'Lounge enthusiasts']
+      },
+      
+      // 38-40: Hilton Cards
+      {
+        id: 'amex_hilton_honors',
+        name: 'Hilton Honors American Express Card',
+        network: 'American Express',
+        issuer: 'American Express',
+        annual_fee: 0,
+        reward_rates: { hilton: 7, restaurants: 5, groceries: 5, gas: 5, other: 3 },
+        signup_bonus: { points: 80000, spend_required: 1000, months: 3, value: 400 },
+        perks: [
+          '80,000 Hilton Honors bonus points after $1,000 spend in first 3 months',
+          '7x points on Hilton purchases',
+          '5x points at U.S. restaurants, U.S. supermarkets, and U.S. gas stations',
+          '3x points on all other purchases',
+          'Silver status',
+          'No foreign transaction fees'
+        ],
+        benefits: { travel_insurance: true },
+        fees: { foreign_transaction: 0, cash_advance: 5, late_payment: 39, over_limit: 0 },
+        redemption: { options: ['travel', 'hilton'], best_value: 'hilton' },
+        categories: ['travel', 'hotel', 'hilton'],
+        credit_score_required: 'good',
+        recommended_for: ['Hilton guests', 'Hotel stayers', 'No annual fee seekers']
+      },
+      {
+        id: 'amex_hilton_surpass',
+        name: 'Hilton Honors American Express Surpass Card',
+        network: 'American Express',
+        issuer: 'American Express',
+        annual_fee: 150,
+        reward_rates: { hilton: 12, restaurants: 6, gas: 6, groceries: 6, other: 3 },
+        signup_bonus: { points: 130000, spend_required: 3000, months: 3, value: 650 },
+        perks: [
+          '130,000 Hilton Honors bonus points after $3,000 spend in first 3 months',
+          '12x points on Hilton purchases',
+          '6x points at U.S. restaurants, U.S. supermarkets, and U.S. gas stations',
+          '3x points on all other purchases',
+          'Gold status',
+          'Priority Pass Select membership (10 visits per year)',
+          'Free weekend night reward',
+          'No foreign transaction fees'
+        ],
+        benefits: { travel_insurance: true, airport_lounge_access: true },
+        fees: { foreign_transaction: 0, cash_advance: 5, late_payment: 39, over_limit: 0 },
+        redemption: { options: ['travel', 'hilton'], best_value: 'hilton' },
+        categories: ['travel', 'hotel', 'hilton'],
+        credit_score_required: 'good',
+        recommended_for: ['Hilton guests', 'Hotel enthusiasts', 'Status seekers']
+      },
+      {
+        id: 'amex_hilton_aspire',
+        name: 'Hilton Honors American Express Aspire Card',
+        network: 'American Express',
+        issuer: 'American Express',
+        annual_fee: 450,
+        reward_rates: { hilton: 14, flights: 7, car_rentals: 7, restaurants: 7, other: 3 },
+        signup_bonus: { points: 150000, spend_required: 4000, months: 3, value: 750 },
+        perks: [
+          '150,000 Hilton Honors bonus points after $4,000 spend in first 3 months',
+          '14x points on Hilton purchases',
+          '7x points on flights booked directly with airlines or Amex Travel, car rentals, and U.S. restaurants',
+          '3x points on all other purchases',
+          'Diamond status',
+          '$250 annual Hilton resort credit',
+          '$250 annual airline fee credit',
+          'Priority Pass Select membership',
+          'Free weekend night reward',
+          'Free weekend night reward on account anniversary',
+          'No foreign transaction fees'
+        ],
+        benefits: {
+          travel_insurance: true,
+          airport_lounge_access: true,
+          concierge_service: true
+        },
+        fees: { foreign_transaction: 0, cash_advance: 5, late_payment: 39, over_limit: 0 },
+        redemption: { options: ['travel', 'hilton'], best_value: 'hilton' },
+        categories: ['travel', 'hotel', 'hilton', 'premium'],
+        credit_score_required: 'excellent',
+        recommended_for: ['Frequent Hilton guests', 'Premium travelers', 'Status maximizers']
+      },
+      
+      // 41: Marriott Bonvoy Brilliant
+      {
+        id: 'amex_marriott_bonvoy_brilliant',
+        name: 'Marriott Bonvoy Brilliant American Express Card',
+        network: 'American Express',
+        issuer: 'American Express',
+        annual_fee: 650,
+        reward_rates: { marriott: 6, restaurants: 3, flights: 3, other: 2 },
+        signup_bonus: { points: 95000, spend_required: 5000, months: 3, value: 950 },
+        perks: [
+          '95,000 Marriott Bonvoy bonus points after $5,000 spend in first 3 months',
+          '6x points on Marriott purchases',
+          '3x points at restaurants worldwide and flights booked directly with airlines',
+          '2x points on all other purchases',
+          'Platinum Elite status',
+          '$300 annual Marriott Bonvoy statement credit',
+          'Priority Pass Select membership',
+          'Free night award (up to 85,000 points)',
+          'Global Entry/TSA PreCheck credit (up to $100 every 4 years)',
+          'No foreign transaction fees'
+        ],
+        benefits: {
+          travel_insurance: true,
+          airport_lounge_access: true,
+          concierge_service: true
+        },
+        fees: { foreign_transaction: 0, cash_advance: 5, late_payment: 39, over_limit: 0 },
+        redemption: { options: ['travel', 'marriott'], best_value: 'marriott' },
+        categories: ['travel', 'hotel', 'marriott', 'premium'],
+        credit_score_required: 'excellent',
+        recommended_for: ['Marriott guests', 'Premium travelers', 'Status seekers']
+      },
+      
+      // 42-43: Chase Marriott Cards
+      {
+        id: 'chase_marriott_bonvoy_boundless',
+        name: 'Marriott Bonvoy Boundless Credit Card',
+        network: 'Visa',
+        issuer: 'Chase',
+        annual_fee: 95,
+        reward_rates: { marriott: 6, other: 2 },
+        signup_bonus: { points: 100000, spend_required: 3000, months: 3, value: 1000 },
+        perks: [
+          '100,000 Marriott Bonvoy bonus points after $3,000 spend in first 3 months',
+          '6x points on Marriott purchases',
+          '2x points on all other purchases',
+          'Silver Elite status',
+          'Free night award (up to 35,000 points)',
+          '15 Elite Night Credits per year',
+          'No foreign transaction fees'
+        ],
+        benefits: { travel_insurance: true, purchase_protection: true, extended_warranty: true },
+        fees: { foreign_transaction: 0, cash_advance: 5, late_payment: 40, over_limit: 0 },
+        redemption: { options: ['travel', 'marriott'], best_value: 'marriott' },
+        categories: ['travel', 'hotel', 'marriott'],
+        credit_score_required: 'good',
+        recommended_for: ['Marriott guests', 'Hotel stayers', 'Status seekers']
+      },
+      {
+        id: 'chase_marriott_bonvoy_bold',
+        name: 'Marriott Bonvoy Bold Credit Card',
+        network: 'Visa',
+        issuer: 'Chase',
+        annual_fee: 0,
+        reward_rates: { marriott: 3, other: 1 },
+        signup_bonus: { points: 30000, spend_required: 1000, months: 3, value: 300 },
+        perks: [
+          '30,000 Marriott Bonvoy bonus points after $1,000 spend in first 3 months',
+          '3x points on Marriott purchases',
+          '1x points on all other purchases',
+          '15 Elite Night Credits per year',
+          'No foreign transaction fees'
+        ],
+        benefits: { travel_insurance: true, purchase_protection: true, extended_warranty: true },
+        fees: { foreign_transaction: 0, cash_advance: 5, late_payment: 40, over_limit: 0 },
+        redemption: { options: ['travel', 'marriott'], best_value: 'marriott' },
+        categories: ['travel', 'hotel', 'marriott'],
+        credit_score_required: 'good',
+        recommended_for: ['Marriott guests', 'No annual fee seekers', 'Hotel stayers']
+      },
+      
+      // 44-45: Chase United Cards
+      {
+        id: 'chase_united_explorer',
+        name: 'United Explorer Card',
+        network: 'Visa',
+        issuer: 'Chase',
+        annual_fee: 0,
+        reward_rates: { united: 2, restaurants: 2, hotels: 2, other: 1 },
+        signup_bonus: { miles: 60000, spend_required: 3000, months: 3, value: 600 },
+        perks: [
+          '60,000 bonus miles after $3,000 spend in first 3 months',
+          '2x miles on United purchases, dining, and hotel stays',
+          '1x miles on all other purchases',
+          'First checked bag free',
+          'Priority boarding',
+          '2 United Club one-time passes per year',
+          '25% back on United inflight purchases',
+          'No foreign transaction fees'
+        ],
+        benefits: { travel_insurance: true, purchase_protection: true, extended_warranty: true },
+        fees: { foreign_transaction: 0, cash_advance: 5, late_payment: 40, over_limit: 0 },
+        redemption: { options: ['travel', 'united'], best_value: 'united' },
+        categories: ['travel', 'airline', 'united'],
+        credit_score_required: 'good',
+        recommended_for: ['United flyers', 'Frequent United travelers', 'Bag check users']
+      },
+      {
+        id: 'chase_united_quest',
+        name: 'United Quest Card',
+        network: 'Visa',
+        issuer: 'Chase',
+        annual_fee: 250,
+        reward_rates: { united: 3, travel: 2, dining: 2, other: 1 },
+        signup_bonus: { miles: 70000, spend_required: 4000, months: 3, value: 700 },
+        perks: [
+          '70,000 bonus miles after $4,000 spend in first 3 months',
+          '3x miles on United purchases',
+          '2x miles on travel and dining',
+          '1x miles on all other purchases',
+          'First and second checked bags free',
+          'Priority boarding',
+          '2 United Club one-time passes per year',
+          '$125 annual United credit',
+          'Up to 5,000 bonus miles (25% back) on award tickets',
+          'No foreign transaction fees'
+        ],
+        benefits: {
+          travel_insurance: true,
+          purchase_protection: true,
+          extended_warranty: true
+        },
+        fees: { foreign_transaction: 0, cash_advance: 5, late_payment: 40, over_limit: 0 },
+        redemption: { options: ['travel', 'united'], best_value: 'united' },
+        categories: ['travel', 'airline', 'united'],
+        credit_score_required: 'good',
+        recommended_for: ['United flyers', 'Frequent United travelers', 'Bag check users']
+      },
+      
+      // 46-48: Chase Southwest Cards
+      {
+        id: 'chase_southwest_rapid_rewards_plus',
+        name: 'Southwest Rapid Rewards Plus Credit Card',
+        network: 'Visa',
+        issuer: 'Chase',
+        annual_fee: 69,
+        reward_rates: { southwest: 2, rapid_rewards: 2, other: 1 },
+        signup_bonus: { miles: 50000, spend_required: 1000, months: 3, value: 500 },
+        perks: [
+          '50,000 bonus points after $1,000 spend in first 3 months',
+          '2x points on Southwest purchases',
+          '2x points on Rapid Rewards hotel and car rental partners',
+          '1x points on all other purchases',
+          '3,000 bonus points on account anniversary',
+          'No foreign transaction fees'
+        ],
+        benefits: { travel_insurance: true, purchase_protection: true, extended_warranty: true },
+        fees: { foreign_transaction: 0, cash_advance: 5, late_payment: 40, over_limit: 0 },
+        redemption: { options: ['travel', 'southwest'], best_value: 'southwest' },
+        categories: ['travel', 'airline', 'southwest'],
+        credit_score_required: 'good',
+        recommended_for: ['Southwest flyers', 'Frequent Southwest travelers']
+      },
+      {
+        id: 'chase_southwest_premier',
+        name: 'Southwest Rapid Rewards Premier Credit Card',
+        network: 'Visa',
+        issuer: 'Chase',
+        annual_fee: 99,
+        reward_rates: { southwest: 2, rapid_rewards: 2, other: 1 },
+        signup_bonus: { miles: 50000, spend_required: 1000, months: 3, value: 500 },
+        perks: [
+          '50,000 bonus points after $1,000 spend in first 3 months',
+          '2x points on Southwest purchases',
+          '2x points on Rapid Rewards hotel and car rental partners',
+          '1x points on all other purchases',
+          '6,000 bonus points on account anniversary',
+          'No foreign transaction fees'
+        ],
+        benefits: { travel_insurance: true, purchase_protection: true, extended_warranty: true },
+        fees: { foreign_transaction: 0, cash_advance: 5, late_payment: 40, over_limit: 0 },
+        redemption: { options: ['travel', 'southwest'], best_value: 'southwest' },
+        categories: ['travel', 'airline', 'southwest'],
+        credit_score_required: 'good',
+        recommended_for: ['Southwest flyers', 'Frequent Southwest travelers', 'Point maximizers']
+      },
+      {
+        id: 'chase_southwest_priority',
+        name: 'Southwest Rapid Rewards Priority Credit Card',
+        network: 'Visa',
+        issuer: 'Chase',
+        annual_fee: 149,
+        reward_rates: { southwest: 2, rapid_rewards: 2, other: 1 },
+        signup_bonus: { miles: 50000, spend_required: 1000, months: 3, value: 500 },
+        perks: [
+          '50,000 bonus points after $1,000 spend in first 3 months',
+          '2x points on Southwest purchases',
+          '2x points on Rapid Rewards hotel and car rental partners',
+          '1x points on all other purchases',
+          '7,500 bonus points on account anniversary',
+          '$75 annual Southwest travel credit',
+          'Upgraded boardings (4 per year)',
+          'No foreign transaction fees'
+        ],
+        benefits: {
+          travel_insurance: true,
+          purchase_protection: true,
+          extended_warranty: true
+        },
+        fees: { foreign_transaction: 0, cash_advance: 5, late_payment: 40, over_limit: 0 },
+        redemption: { options: ['travel', 'southwest'], best_value: 'southwest' },
+        categories: ['travel', 'airline', 'southwest'],
+        credit_score_required: 'good',
+        recommended_for: ['Southwest flyers', 'Frequent Southwest travelers', 'Priority boarders']
+      },
+      
+      // 49-50: Discover Cards
+      {
+        id: 'discover_it_cash_back',
+        name: 'Discover it Cash Back',
+        network: 'Discover',
+        issuer: 'Discover',
+        annual_fee: 0,
+        reward_rates: { rotating: 5, other: 1 },
+        signup_bonus: null,
+        perks: [
+          '5% cash back on rotating quarterly categories (up to $1,500 per quarter)',
+          '1% cash back on all other purchases',
+          'Cashback Match - Discover will automatically match all cash back earned at the end of your first year',
+          'Intro 0% APR for 15 months on purchases',
+          'No annual fee'
+        ],
+        benefits: { purchase_protection: true, extended_warranty: true },
+        fees: { foreign_transaction: 0, cash_advance: 5, late_payment: 40, over_limit: 0 },
+        redemption: { options: ['cash_back', 'gift_cards', 'amazon'], best_value: 'cash_back' },
+        categories: ['cash_back', 'rotating'],
+        credit_score_required: 'good',
+        recommended_for: ['Category maximizers', 'Cash back enthusiasts', 'First year maximizers']
+      },
+      {
+        id: 'discover_it_chrome',
+        name: 'Discover it Chrome',
+        network: 'Discover',
+        issuer: 'Discover',
+        annual_fee: 0,
+        reward_rates: { gas: 2, restaurants: 2, other: 1 },
+        signup_bonus: null,
+        perks: [
+          '2% cash back at gas stations and restaurants (up to $1,000 per quarter)',
+          '1% cash back on all other purchases',
+          'Cashback Match - Discover will automatically match all cash back earned at the end of your first year',
+          'Intro 0% APR for 15 months on purchases',
+          'No annual fee'
+        ],
+        benefits: { purchase_protection: true, extended_warranty: true },
+        fees: { foreign_transaction: 0, cash_advance: 5, late_payment: 40, over_limit: 0 },
+        redemption: { options: ['cash_back', 'gift_cards', 'amazon'], best_value: 'cash_back' },
+        categories: ['cash_back', 'gas', 'dining'],
+        credit_score_required: 'good',
+        recommended_for: ['Gas spenders', 'Dining lovers', 'First year maximizers']
+      }
+    );
+    
+    console.log(`✅ Generated ${this.cards.length} cards`);
+    return this.cards;
+  }
+
+  async saveToJSON(outputPath) {
+    const fullPath = path.resolve(__dirname, outputPath);
+    const dir = path.dirname(fullPath);
+    
+    try {
+      await fs.mkdir(dir, { recursive: true });
+    } catch (err) {
+      // Directory might already exist
+    }
+    
+    await fs.writeFile(fullPath, JSON.stringify(this.cards, null, 2));
+    console.log(`💾 Saved ${this.cards.length} cards to ${fullPath}`);
+    return fullPath;
+  }
+}
+
+if (require.main === module) {
+  (async () => {
+    try {
+      const generator = new ComprehensiveCardDatabase();
+      generator.generateAllCards();
+      await generator.saveToJSON('../client/src/data/cards.json');
+      console.log('✅ Comprehensive card database created successfully!');
+      console.log(`📊 Total cards: ${generator.cards.length}`);
+      process.exit(0);
+    } catch (err) {
+      console.error('❌ Error:', err);
+      process.exit(1);
+    }
+  })();
+}
+
+module.exports = ComprehensiveCardDatabase;
+

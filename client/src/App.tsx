@@ -1,46 +1,37 @@
 import React, { useState } from 'react';
-import { AuthProvider } from './contexts/AuthContext';
 import Layout from './components/Layout';
-import Home from './pages/Home';
+import Advisor from './pages/Advisor';
+import Priorities from './pages/Priorities';
 import Wallet from './pages/Wallet';
-import ExploreCards from './pages/ExploreCards';
-import SmartMatch from './pages/SmartMatch';
-import Goals from './pages/Goals';
-import PointsConverter from './pages/PointsConverter';
-import RotatingCategories from './pages/RotatingCategories';
-import Analytics from './pages/Analytics';
+import Compare from './pages/Compare';
 import UpgradeGuide from './pages/UpgradeGuide';
-import Learn from './pages/Learn';
-import Account from './pages/Account';
 
-type Page = 'home' | 'wallet' | 'explore' | 'smart-match' | 'goals' | 'points-converter' | 'rotating-categories' | 'analytics' | 'upgrade-guide' | 'learn' | 'account';
+type Page = 'advisor' | 'priorities' | 'wallet' | 'compare' | 'upgrade-guide';
 
 function App() {
-  const [currentPage, setCurrentPage] = useState<Page>('home');
+  const [currentPage, setCurrentPage] = useState<Page>('advisor');
 
   const renderPage = () => {
     switch (currentPage) {
-      case 'home': return <Home />;
-      case 'wallet': return <Wallet />;
-      case 'explore': return <ExploreCards />;
-      case 'smart-match': return <SmartMatch />;
-      case 'goals': return <Goals />;
-      case 'points-converter': return <PointsConverter />;
-      case 'rotating-categories': return <RotatingCategories />;
-      case 'analytics': return <Analytics />;
-      case 'upgrade-guide': return <UpgradeGuide />;
-      case 'learn': return <Learn />;
-      case 'account': return <Account />;
-      default: return <Home />;
+      case 'advisor':
+        return <Advisor />;
+      case 'priorities':
+        return <Priorities />;
+      case 'wallet':
+        return <Wallet />;
+      case 'compare':
+        return <Compare />;
+      case 'upgrade-guide':
+        return <UpgradeGuide />;
+      default:
+        return <Advisor />;
     }
   };
 
   return (
-    <AuthProvider>
-      <Layout currentPage={currentPage} setCurrentPage={setCurrentPage}>
-        {renderPage()}
-      </Layout>
-    </AuthProvider>
+    <Layout currentPage={currentPage} setCurrentPage={setCurrentPage}>
+      {renderPage()}
+    </Layout>
   );
 }
 
