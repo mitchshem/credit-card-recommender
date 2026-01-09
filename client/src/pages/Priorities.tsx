@@ -57,34 +57,34 @@ const Priorities: React.FC = () => {
     const activeCards = wallet.filter(c => c.isActive);
     const preview: Record<string, string> = {};
 
-    CATEGORIES.forEach(category => {
+    CATEGORIES.forEach((category: string) => {
       if (category === 'other') return;
 
       // Filter cards based on constraints
-      let filteredCards = [...activeCards];
+      let filteredCards: Card[] = [...activeCards];
       
       // Costco constraint: exclude Amex
       if (category === 'costco' || category === 'warehouse') {
-        filteredCards = filteredCards.filter(c => c.network !== 'American Express');
+        filteredCards = filteredCards.filter((c: Card) => c.network !== 'American Express');
       }
 
       // Find best card for this category
       let bestCard: Card | null = null;
       let bestRate = 0;
 
-      filteredCards.forEach(card => {
+      for (const card of filteredCards) {
         const rate = card.rewardsProfile.categoryMultipliers[category] || card.rewardsProfile.baseRate;
         
         // Apply constraints
         if (constraints?.avoidAnnualFeeBias && card.annualFee > 0 && rate === bestRate) {
-          return; // Skip if same rate but has annual fee
+          continue; // Skip if same rate but has annual fee
         }
         
         if (rate > bestRate) {
           bestRate = rate;
           bestCard = card;
         }
-      });
+      }
 
       if (bestCard) {
         preview[category] = bestCard.name;
