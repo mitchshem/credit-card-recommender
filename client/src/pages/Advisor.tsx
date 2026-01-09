@@ -63,6 +63,10 @@ const Advisor: React.FC = () => {
   const handleCategoryClick = (category: string) => {
     setSelectedCategory(category);
     
+    // Get current preferences (refresh to ensure we have latest)
+    const currentPreferences = getPreferences();
+    setPreferences(currentPreferences);
+    
     // Create merchant object for this category
     const merchant: Merchant = {
       id: category,
@@ -71,11 +75,11 @@ const Advisor: React.FC = () => {
       categories: [category]
     };
 
-    // Get recommendation with preferences
+    // Get recommendation with current preferences
     const result = getBestCardForMerchantWithConstraints({
       wallet: wallet.filter(c => c.isActive),
       merchant,
-      preferences: preferences
+      preferences: currentPreferences
     });
 
     setRecommendation(result);
