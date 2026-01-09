@@ -57,7 +57,7 @@ const Priorities: React.FC = () => {
     const activeCards = wallet.filter(c => c.isActive);
     const preview: Record<string, string> = {};
 
-    CATEGORIES.forEach((category: string) => {
+    (CATEGORIES as readonly string[]).forEach((category: string) => {
       if (category === 'other') return;
 
       // Filter cards based on constraints
@@ -72,8 +72,9 @@ const Priorities: React.FC = () => {
       let bestCard: Card | null = null;
       let bestRate = 0;
 
-      for (const card of filteredCards) {
-        const rate = card.rewardsProfile.categoryMultipliers[category] || card.rewardsProfile.baseRate;
+      for (let i = 0; i < filteredCards.length; i++) {
+        const card = filteredCards[i] as Card;
+        const rate = (card.rewardsProfile.categoryMultipliers[category] as number) || card.rewardsProfile.baseRate;
         
         // Apply constraints
         if (constraints?.avoidAnnualFeeBias && card.annualFee > 0 && rate === bestRate) {
@@ -86,7 +87,7 @@ const Priorities: React.FC = () => {
         }
       }
 
-      if (bestCard) {
+      if (bestCard !== null && bestCard !== undefined) {
         preview[category] = bestCard.name;
       }
     });
