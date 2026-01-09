@@ -182,10 +182,10 @@ export const MY_CARDS: Omit<Card, 'isActive'>[] = [
     rewardsProfile: {
       baseRate: 1,
       categoryMultipliers: {
-        groceries: 2, // Gas stations and grocery stores
-        gas: 2,
-        restaurants: 2, // Dining
-        dining: 2, // Alias for restaurants
+        groceries: 2, // U.S. supermarkets and grocery stores
+        gas: 2, // U.S. gas stations
+        dining: 2, // U.S. restaurants
+        restaurants: 2, // Alias for dining (backwards compatibility)
         disney: 2, // Disney purchases
         other: 1
       },
@@ -251,7 +251,7 @@ export const MY_CARDS: Omit<Card, 'isActive'>[] = [
     id: 'barclays_aviator',
     issuer: 'Barclays',
     network: 'Visa',
-    name: 'Barclays AAdvantage Aviator Red World Elite Mastercard',
+    name: 'Barclays AAdvantage Aviator Red World Elite',
     rewardsProfile: {
       baseRate: 1,
       categoryMultipliers: {
