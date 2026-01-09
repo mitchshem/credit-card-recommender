@@ -19,19 +19,36 @@ export const MY_CARDS: Omit<Card, 'isActive'>[] = [
     rewardsProfile: {
       baseRate: 1,
       categoryMultipliers: {
-        dining: 4,
-        groceries: 4,
-        flights: 3,
+        dining: 4, // Up to $50k/year, then 1x
+        groceries: 4, // U.S. supermarkets up to $25k/year, then 1x
+        flights: 3, // Booked directly with airlines or amextravel.com
         other: 1
       },
-      notes: 'Up to $120 dining credit annually'
+      notes: '$120 annual dining credit ($10/month at Grubhub, Seamless, The Cheesecake Factory, Goldbelly, Wine.com, Milk Bar, and select Shake Shack locations)'
     },
     annualFee: 250,
     benefits: [
       {
-        description: 'Up to $120 annual dining credit',
+        description: '$120 annual dining credit ($10/month)',
         category: 'lifestyle',
-        value: '$120'
+        value: '$120/year'
+      },
+      {
+        description: '$10 monthly Uber Cash credit',
+        category: 'lifestyle',
+        value: '$120/year'
+      },
+      {
+        description: '4x Membership Rewards points at restaurants worldwide',
+        category: 'rewards',
+      },
+      {
+        description: '4x points at U.S. supermarkets (up to $25k/year)',
+        category: 'rewards',
+      },
+      {
+        description: '3x points on flights booked directly with airlines',
+        category: 'travel',
       },
       {
         description: 'No foreign transaction fees',
@@ -47,33 +64,60 @@ export const MY_CARDS: Omit<Card, 'isActive'>[] = [
     rewardsProfile: {
       baseRate: 1,
       categoryMultipliers: {
-        flights: 5,
-        hotels: 5,
+        flights: 5, // Booked directly with airlines or via Amex Travel (up to $500k/year)
+        hotels: 5, // Prepaid hotels booked via Amex Travel
         dining: 1,
         other: 1
       },
-      notes: 'Up to $200 airline fee credit, $200 Uber credit, $240 digital entertainment credit'
+      notes: '5x points on flights and prepaid hotels. $695 annual fee offset by extensive credits.'
     },
     annualFee: 695,
     benefits: [
       {
-        description: 'Centurion Lounge access',
+        description: '$200 annual airline fee credit',
+        category: 'travel',
+        value: '$200/year'
+      },
+      {
+        description: '$200 annual Uber Cash credit ($15/month + $35 in December)',
+        category: 'lifestyle',
+        value: '$200/year'
+      },
+      {
+        description: '$240 annual digital entertainment credit ($20/month at select services)',
+        category: 'lifestyle',
+        value: '$240/year'
+      },
+      {
+        description: '$200 annual hotel credit (Fine Hotels + Resorts)',
+        category: 'travel',
+        value: '$200/year'
+      },
+      {
+        description: '$100 annual Saks Fifth Avenue credit ($50 twice per year)',
+        category: 'lifestyle',
+        value: '$100/year'
+      },
+      {
+        description: 'Centurion Lounge access + Priority Pass Select',
         category: 'travel',
       },
       {
-        description: 'Up to $200 airline fee credit',
+        description: '5x Membership Rewards points on flights (direct or Amex Travel)',
+        category: 'rewards',
+      },
+      {
+        description: '5x points on prepaid hotels via Amex Travel',
+        category: 'rewards',
+      },
+      {
+        description: 'Elite hotel status (Marriott Gold, Hilton Gold)',
+        category: 'status',
+      },
+      {
+        description: 'TSA PreCheck or Global Entry credit',
         category: 'travel',
-        value: '$200'
-      },
-      {
-        description: 'Up to $200 Uber credit',
-        category: 'lifestyle',
-        value: '$200'
-      },
-      {
-        description: 'Up to $240 digital entertainment credit',
-        category: 'lifestyle',
-        value: '$240'
+        value: 'Up to $100'
       }
     ]
   },
@@ -85,27 +129,47 @@ export const MY_CARDS: Omit<Card, 'isActive'>[] = [
     rewardsProfile: {
       baseRate: 1,
       categoryMultipliers: {
-        flights: 2,
-        dining: 2,
-        groceries: 2,
-        hotels: 2,
+        flights: 2, // Delta purchases only
+        dining: 2, // U.S. restaurants
+        groceries: 2, // U.S. supermarkets
+        hotels: 1, // Not 2x, corrected
         other: 1
       },
-      notes: 'Earn Delta SkyMiles. MQD waiver at $25k spend'
+      notes: '2x miles on Delta purchases, U.S. restaurants, and U.S. supermarkets. MQD waiver at $25k spend.'
     },
     annualFee: 99,
     benefits: [
       {
-        description: 'Earn Delta SkyMiles',
-        category: 'travel',
+        description: '2x miles on Delta purchases',
+        category: 'rewards',
+      },
+      {
+        description: '2x miles at U.S. restaurants',
+        category: 'rewards',
+      },
+      {
+        description: '2x miles at U.S. supermarkets',
+        category: 'rewards',
       },
       {
         description: 'MQD waiver at $25k annual spend',
         category: 'status',
-        value: '$25k'
+        value: '$25k/year'
       },
       {
-        description: 'First checked bag free on Delta flights',
+        description: 'First checked bag free on Delta flights (for you and up to 8 companions)',
+        category: 'travel',
+      },
+      {
+        description: 'Priority boarding on Delta flights',
+        category: 'travel',
+      },
+      {
+        description: '20% off in-flight purchases',
+        category: 'travel',
+      },
+      {
+        description: 'No foreign transaction fees',
         category: 'travel',
       }
     ]
@@ -118,23 +182,40 @@ export const MY_CARDS: Omit<Card, 'isActive'>[] = [
     rewardsProfile: {
       baseRate: 1,
       categoryMultipliers: {
-        groceries: 2,
+        groceries: 2, // Gas stations and grocery stores
         gas: 2,
-        restaurants: 2,
-        disney: 2,
+        restaurants: 2, // Dining
+        dining: 2, // Alias for restaurants
+        disney: 2, // Disney purchases
         other: 1
       },
-      notes: 'Earn Disney Rewards Dollars'
+      notes: 'Earn 2% in Disney Rewards Dollars on Disney, gas, groceries, restaurants. 1% on all other purchases.'
     },
     annualFee: 49,
     benefits: [
       {
-        description: 'Earn Disney Rewards Dollars',
-        category: 'lifestyle',
+        description: '2% Disney Rewards Dollars on Disney, gas, groceries, restaurants',
+        category: 'rewards',
+      },
+      {
+        description: '1% on all other purchases',
+        category: 'rewards',
       },
       {
         description: '10% off select Disney merchandise and dining',
         category: 'lifestyle',
+      },
+      {
+        description: 'Special Disney character meet-and-greets',
+        category: 'lifestyle',
+      },
+      {
+        description: 'Special financing on Disney vacation packages',
+        category: 'lifestyle',
+      },
+      {
+        description: 'No foreign transaction fees',
+        category: 'travel',
       }
     ]
   },
@@ -148,12 +229,20 @@ export const MY_CARDS: Omit<Card, 'isActive'>[] = [
       categoryMultipliers: {
         other: 1
       },
-      notes: 'No rewards, but accepted everywhere Visa is accepted (including Costco)'
+      notes: 'Debit card with no rewards, but accepted everywhere Visa is accepted (including Costco and warehouse clubs)'
     },
     annualFee: 0,
     benefits: [
       {
         description: 'Accepted at Costco and all Visa merchants',
+        category: 'acceptance',
+      },
+      {
+        description: 'No annual fee',
+        category: 'cost',
+      },
+      {
+        description: 'Direct access to checking account funds',
         category: 'acceptance',
       }
     ]
@@ -166,20 +255,40 @@ export const MY_CARDS: Omit<Card, 'isActive'>[] = [
     rewardsProfile: {
       baseRate: 1,
       categoryMultipliers: {
-        flights: 2,
-        american_airlines: 2,
+        flights: 2, // American Airlines purchases only
+        american_airlines: 2, // Alias for flights
         other: 1
       },
-      notes: 'Earn AAdvantage miles. Known for black/red card design'
+      notes: '2x AAdvantage miles on American Airlines purchases. 1x miles on everything else. Known for black/red card design.'
     },
     annualFee: 99,
     benefits: [
       {
-        description: 'Earn AAdvantage miles',
+        description: '2x AAdvantage miles on American Airlines purchases',
+        category: 'rewards',
+      },
+      {
+        description: '1x miles on all other purchases',
+        category: 'rewards',
+      },
+      {
+        description: 'First checked bag free on American Airlines flights (for you and up to 4 companions)',
         category: 'travel',
       },
       {
-        description: 'First checked bag free on American Airlines flights',
+        description: 'Priority boarding on American Airlines flights',
+        category: 'travel',
+      },
+      {
+        description: '25% off in-flight food and beverage purchases',
+        category: 'travel',
+      },
+      {
+        description: 'Preferred boarding (Group 5)',
+        category: 'travel',
+      },
+      {
+        description: 'No foreign transaction fees',
         category: 'travel',
       }
     ]
