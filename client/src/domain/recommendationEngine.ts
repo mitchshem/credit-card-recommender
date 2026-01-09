@@ -17,6 +17,7 @@ import {
   RecommendationInput,
   RecommendationResult,
   RankedCard,
+  UserPreferences,
 } from './models';
 
 /**
@@ -62,7 +63,7 @@ export function getBestCardForMerchant(
   // Calculate scores for each card
   const rankedCards = activeCards.map(card => {
     const rewardRate = calculateRewardRate(card, input.merchant);
-    const score = calculateScore(card, rewardRate, input.merchant);
+    const score = calculateScore(card, rewardRate, input.merchant, input.preferences);
     const reason = generateReason(card, rewardRate, input.merchant);
 
     return {
@@ -75,18 +76,22 @@ export function getBestCardForMerchant(
 
   // Sort by score (highest first)
   rankedCards.sort((a, b) => {
-    // Primary sort: by score (reward rate)
-    if (b.score !== a.score) {
+    // Primary sort: by score (includes preferences)
+    if (Math.abs(b.score - a.score) > 0.01) {
       return b.score - a.score;
     }
-    // Tiebreaker: prefer lower annual fee
+    // If scores are very close, prefer higher reward rate
+    if (b.rewardRate !== a.rewardRate) {
+      return b.rewardRate - a.rewardRate;
+    }
+    // Final tiebreaker: prefer lower annual fee
     const cardA = activeCards.find(c => c.id === a.cardId)!;
     const cardB = activeCards.find(c => c.id === b.cardId)!;
     return cardA.annualFee - cardB.annualFee;
   });
 
-  // Generate explanation
-  const explanation = generateExplanation(rankedCards, activeCards, input.merchant);
+  // Generate explanation (include preferences context if applicable)
+  const explanation = generateExplanation(rankedCards, activeCards, input.merchant, input.preferences);
 
   return {
     bestCardId: rankedCards[0].cardId,
@@ -132,21 +137,192 @@ function calculateRewardRate(card: Card, merchant: Merchant): number {
  * 
  * Computes a numeric score for ranking cards. Higher score = better card.
  * 
- * MVP: Score = reward rate (simple!)
- * Future: Could factor in:
- * - Annual fee (negative points)
- * - Benefits value
- * - User preferences
- * - Spending caps and restrictions
+ * Factors:
+ * - Base reward rate
+ * - User preferences (primary objective, constraints)
+ * - Annual fee considerations
+ * - Card-specific bonuses (Delta miles, AA miles, etc.)
  */
 function calculateScore(
   card: Card,
   rewardRate: number,
-  merchant: Merchant
+  merchant: Merchant,
+  preferences?: UserPreferences
 ): number {
-  // MVP: Score is just the reward rate
-  // Future: Subtract annual fee impact, add benefits value, etc.
-  return rewardRate;
+  if (!preferences) {
+    // No preferences: simple reward rate scoring
+    return rewardRate;
+  }
+
+  let score = rewardRate;
+
+  // Apply primary objective
+  const objective = preferences.primaryObjective;
+  if (objective) {
+    score = applyPrimaryObjective(card, rewardRate, objective, score);
+  }
+
+  // Apply constraints
+  if (preferences.constraints) {
+    score = applyConstraints(card, rewardRate, preferences.constraints, score);
+  }
+
+  // Apply priority bonuses
+  if (preferences.priorities && preferences.priorities.length > 0) {
+    score = applyPriorityBonuses(card, preferences.priorities, score);
+  }
+
+  return score;
+}
+
+/**
+ * Apply Primary Objective to Score
+ */
+function applyPrimaryObjective(
+  card: Card,
+  rewardRate: number,
+  objective: 'maximize_points' | 'maximize_delta_miles' | 'maximize_aa_miles' | 'minimize_cost' | 'simplify',
+  currentScore: number
+): number {
+  switch (objective) {
+    case 'maximize_delta_miles':
+      // Boost Delta SkyMiles cards
+      if (card.id === 'delta_skymiles_gold') {
+        return currentScore * 1.2; // 20% boost for Delta-focused objective
+      }
+      // Slight penalty for other airline cards if reward rates are similar
+      if (card.id === 'barclays_aviator' && rewardRate > 0) {
+        return currentScore * 0.9;
+      }
+      break;
+    
+    case 'maximize_aa_miles':
+      // Boost AAdvantage cards
+      if (card.id === 'barclays_aviator') {
+        return currentScore * 1.2; // 20% boost for AA-focused objective
+      }
+      // Slight penalty for other airline cards
+      if (card.id === 'delta_skymiles_gold' && rewardRate > 0) {
+        return currentScore * 0.9;
+      }
+      break;
+    
+    case 'minimize_cost':
+      // Prefer no-annual-fee cards when rates are close
+      if (card.annualFee === 0) {
+        return currentScore * 1.15; // 15% boost for no-fee cards
+      }
+      // Penalty for high annual fees when rates are similar
+      if (card.annualFee > 250) {
+        return currentScore * 0.85;
+      }
+      break;
+    
+    case 'simplify':
+      // Prefer simpler cards (lower annual fees, fewer categories)
+      if (card.annualFee === 0 || card.annualFee <= 99) {
+        return currentScore * 1.1; // 10% boost for simpler/lower-fee cards
+      }
+      break;
+    
+    case 'maximize_points':
+    default:
+      // Default: maximize raw reward rate (already handled by base score)
+      break;
+  }
+
+  return currentScore;
+}
+
+/**
+ * Apply Constraints to Score
+ */
+function applyConstraints(
+  card: Card,
+  rewardRate: number,
+  constraints: NonNullable<UserPreferences['constraints']>,
+  currentScore: number
+): number {
+  let adjustedScore = currentScore;
+
+  // Avoid annual fee bias: prefer no-fee when rates are equal
+  if (constraints.avoidAnnualFeeBias) {
+    // If this card has an annual fee and we're comparing at the same rate,
+    // slight penalty
+    if (card.annualFee > 0 && rewardRate <= 2) {
+      adjustedScore *= 0.95;
+    }
+    // Bonus for no-fee cards
+    if (card.annualFee === 0 && rewardRate > 1) {
+      adjustedScore *= 1.05;
+    }
+  }
+
+  // Prefer simplicity: bonus for lower-fee, simpler cards
+  if (constraints.preferSimplicity) {
+    if (card.annualFee <= 99) {
+      adjustedScore *= 1.08;
+    } else if (card.annualFee > 400) {
+      adjustedScore *= 0.92;
+    }
+  }
+
+  // Prefer lounge access: boost Platinum
+  if (constraints.preferLoungeAccess) {
+    if (card.id === 'amex_platinum') {
+      adjustedScore *= 1.15; // Significant boost for lounge access
+    }
+    // Boost Delta Gold for Priority boarding (travel benefit)
+    if (card.id === 'delta_skymiles_gold') {
+      adjustedScore *= 1.05;
+    }
+  }
+
+  // Prefer status progress: boost airline cards
+  if (constraints.preferStatusProgress) {
+    if (card.id === 'delta_skymiles_gold') {
+      adjustedScore *= 1.1; // MQD waiver benefit
+    }
+    if (card.id === 'barclays_aviator') {
+      adjustedScore *= 1.05; // Airline card
+    }
+  }
+
+  return adjustedScore;
+}
+
+/**
+ * Apply Priority Bonuses to Score
+ */
+function applyPriorityBonuses(
+  card: Card,
+  priorities: string[],
+  currentScore: number
+): number {
+  let adjustedScore = currentScore;
+
+  // Lounge access priority
+  if (priorities.includes('lounge_access')) {
+    if (card.id === 'amex_platinum') {
+      adjustedScore *= 1.2; // Big boost for Centurion Lounge access
+    }
+  }
+
+  // Status progress priority
+  if (priorities.includes('status_progress')) {
+    if (card.id === 'delta_skymiles_gold') {
+      adjustedScore *= 1.15; // MQD waiver is valuable
+    }
+  }
+
+  // Dining credits priority
+  if (priorities.includes('dining_credits')) {
+    if (card.id === 'amex_gold') {
+      adjustedScore *= 1.1; // $120 dining credit
+    }
+  }
+
+  return adjustedScore;
 }
 
 /**
@@ -189,7 +365,8 @@ function generateReason(
 function generateExplanation(
   rankedCards: RankedCard[],
   cards: Card[],
-  merchant: Merchant
+  merchant: Merchant,
+  preferences?: UserPreferences
 ): string {
   if (rankedCards.length === 0) {
     return 'No cards available for recommendation.';
@@ -198,6 +375,7 @@ function generateExplanation(
   const bestCard = cards.find(c => c.id === rankedCards[0].cardId)!;
   const bestCardName = bestCard.nickname || bestCard.name;
   const bestRate = rankedCards[0].rewardRate;
+  const bestScore = rankedCards[0].score;
 
   // Base explanation
   let explanation = `Use ${bestCardName} because it earns ${bestRate}x `;
@@ -213,14 +391,29 @@ function generateExplanation(
     explanation += 'on all purchases';
   }
 
+  // Add context based on preferences
+  if (preferences) {
+    if (preferences.primaryObjective === 'maximize_delta_miles' && bestCard.id === 'delta_skymiles_gold') {
+      explanation += ` and helps maximize Delta SkyMiles`;
+    } else if (preferences.primaryObjective === 'maximize_aa_miles' && bestCard.id === 'barclays_aviator') {
+      explanation += ` and helps maximize AAdvantage miles`;
+    } else if (preferences.primaryObjective === 'minimize_cost' && bestCard.annualFee === 0) {
+      explanation += ` with no annual fee`;
+    } else if (preferences.constraints?.preferLoungeAccess && bestCard.id === 'amex_platinum') {
+      explanation += ` plus lounge access benefits`;
+    }
+  }
+
   // Add alternative if there's a close second
   if (rankedCards.length > 1) {
     const secondCard = cards.find(c => c.id === rankedCards[1].cardId)!;
     const secondRate = rankedCards[1].rewardRate;
+    const secondScore = rankedCards[1].score;
     const secondCardName = secondCard.nickname || secondCard.name;
 
-    // If second place is within 0.5x, mention it
-    if (bestRate - secondRate <= 0.5) {
+    // If second place score is within 10%, mention it (score accounts for preferences)
+    const scoreDifference = (bestScore - secondScore) / bestScore;
+    if (scoreDifference <= 0.1 || bestRate - secondRate <= 0.5) {
       explanation += `. Or ${secondCardName} for ${secondRate}x`;
     }
   }

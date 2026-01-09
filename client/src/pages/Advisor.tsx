@@ -26,6 +26,40 @@ const Advisor: React.FC = () => {
     setPreferences(getPreferences());
   }, []);
 
+  // Reload preferences when they change (listen for custom event from Priorities page)
+  useEffect(() => {
+    const handlePreferencesUpdate = () => {
+      const newPrefs = getPreferences();
+      setPreferences(newPrefs);
+      // If we have a selected category, recalculate recommendation with new preferences
+      if (selectedCategory) {
+        const merchant: Merchant = {
+          id: selectedCategory,
+          name: CATEGORY_NAMES[selectedCategory as keyof typeof CATEGORY_NAMES] || selectedCategory,
+          normalizedName: selectedCategory.toLowerCase(),
+          categories: [selectedCategory]
+        };
+        const result = getBestCardForMerchantWithConstraints({
+          wallet: wallet.filter(c => c.isActive),
+          merchant,
+          preferences: newPrefs
+        });
+        setRecommendation(result);
+      }
+    };
+    
+    // Listen for custom event from Priorities page
+    window.addEventListener('preferencesUpdated', handlePreferencesUpdate);
+    
+    // Also check on focus (when user returns to tab)
+    window.addEventListener('focus', handlePreferencesUpdate);
+
+    return () => {
+      window.removeEventListener('preferencesUpdated', handlePreferencesUpdate);
+      window.removeEventListener('focus', handlePreferencesUpdate);
+    };
+  }, [selectedCategory, wallet]);
+
   const handleCategoryClick = (category: string) => {
     setSelectedCategory(category);
     
@@ -37,10 +71,11 @@ const Advisor: React.FC = () => {
       categories: [category]
     };
 
-    // Get recommendation
+    // Get recommendation with preferences
     const result = getBestCardForMerchantWithConstraints({
       wallet: wallet.filter(c => c.isActive),
-      merchant
+      merchant,
+      preferences: preferences
     });
 
     setRecommendation(result);
@@ -55,9 +90,13 @@ const Advisor: React.FC = () => {
   };
 
   /**
-   * Get recommendation with Costco constraint handling
+   * Get recommendation with Costco constraint handling and preferences
    */
-  const getBestCardForMerchantWithConstraints = (input: { wallet: Card[]; merchant: Merchant }): RecommendationResult => {
+  const getBestCardForMerchantWithConstraints = (input: { 
+    wallet: Card[]; 
+    merchant: Merchant;
+    preferences?: ReturnType<typeof getPreferences>;
+  }): RecommendationResult => {
     let filteredWallet = input.wallet;
 
     // Apply Costco constraint: exclude Amex if category is Costco/Warehouse
@@ -76,8 +115,9 @@ const Advisor: React.FC = () => {
     }
 
     return getBestCardForMerchant({
-      ...input,
-      wallet: filteredWallet
+      wallet: filteredWallet,
+      merchant: input.merchant,
+      preferences: input.preferences
     });
   };
 
@@ -95,6 +135,26 @@ const Advisor: React.FC = () => {
       >
         <h1>What card should I use here?</h1>
         <p>Select a category to instantly see which card earns the most</p>
+        {preferences?.primaryObjective && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            style={{
+              marginTop: '1rem',
+              padding: '0.75rem 1rem',
+              background: 'var(--accent-50)',
+              border: '1px solid var(--accent-200)',
+              borderRadius: 'var(--radius-lg)',
+              fontSize: '0.9rem',
+              color: 'var(--accent-700)',
+              display: 'inline-block'
+            }}
+          >
+            <strong>Active:</strong> {preferences.primaryObjective.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+            {preferences.constraints && Object.values(preferences.constraints).some(v => v) && ' • Custom constraints'}
+          </motion.div>
+        )}
       </motion.div>
 
       {/* Category Buttons */}

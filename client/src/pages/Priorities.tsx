@@ -9,7 +9,8 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { initializeWallet } from '../services/localStorage';
 import { savePreferences, getPreferences, UserPreferences } from '../services/localStorage';
-import { Card } from '../domain/models';
+import { Card, Merchant } from '../domain/models';
+import { getBestCardForMerchant } from '../domain/recommendationEngine';
 import { CATEGORIES, CATEGORY_NAMES } from '../data/myCards';
 
 const Priorities: React.FC = () => {
@@ -42,13 +43,21 @@ const Priorities: React.FC = () => {
 
   useEffect(() => {
     // Save preferences whenever they change
-    savePreferences({
+    const prefs = {
       primaryObjective,
       priorities,
       constraints
-    });
+    };
+    savePreferences(prefs);
     
-    // Update preview
+    // Dispatch custom event to notify Advisor page of preference changes
+    window.dispatchEvent(new CustomEvent('preferencesUpdated', {
+      detail: prefs
+    }));
+  }, [primaryObjective, priorities, constraints]);
+
+  useEffect(() => {
+    // Update preview when wallet or preferences change
     updatePreview();
   }, [primaryObjective, priorities, constraints, wallet]);
 
@@ -68,27 +77,33 @@ const Priorities: React.FC = () => {
         filteredCards = filteredCards.filter((c: Card) => c.network !== 'American Express');
       }
 
-      // Find best card for this category
-      let bestCard: Card | null = null;
-      let bestRate = 0;
+      if (filteredCards.length === 0) return;
 
-      for (let i = 0; i < filteredCards.length; i++) {
-        const card = filteredCards[i] as Card;
-        const rate = (card.rewardsProfile.categoryMultipliers[category] as number) || card.rewardsProfile.baseRate;
-        
-        // Apply constraints
-        if (constraints?.avoidAnnualFeeBias && card.annualFee > 0 && rate === bestRate) {
-          continue; // Skip if same rate but has annual fee
-        }
-        
-        if (rate > bestRate) {
-          bestRate = rate;
-          bestCard = card;
-        }
-      }
+      // Use recommendation engine with preferences to find best card
+      const merchant: Merchant = {
+        id: category,
+        name: CATEGORY_NAMES[category as keyof typeof CATEGORY_NAMES] || category,
+        normalizedName: category.toLowerCase(),
+        categories: [category]
+      };
 
-      if (bestCard !== null && bestCard !== undefined) {
-        preview[category] = bestCard.name;
+      const prefs: UserPreferences = {
+        primaryObjective,
+        priorities,
+        constraints
+      };
+
+      const result = getBestCardForMerchant({
+        wallet: filteredCards,
+        merchant,
+        preferences: prefs
+      });
+
+      if (result.bestCardId) {
+        const bestCard = filteredCards.find(c => c.id === result.bestCardId);
+        if (bestCard) {
+          preview[category] = bestCard.name;
+        }
       }
     });
 

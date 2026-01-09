@@ -178,6 +178,25 @@ export interface Merchant {
 // ============================================================================
 
 /**
+ * User Preferences for Recommendations
+ */
+export interface UserPreferences {
+  /** Primary objective when choosing cards */
+  primaryObjective?: 'maximize_points' | 'maximize_delta_miles' | 'maximize_aa_miles' | 'minimize_cost' | 'simplify';
+  
+  /** Additional priorities (lounge access, status progress, etc.) */
+  priorities?: string[];
+  
+  /** Constraints to apply when ranking cards */
+  constraints?: {
+    avoidAnnualFeeBias?: boolean;
+    preferSimplicity?: boolean;
+    preferLoungeAccess?: boolean;
+    preferStatusProgress?: boolean;
+  };
+}
+
+/**
  * RecommendationInput
  * 
  * Input data for the recommendation engine. Contains everything needed
@@ -195,6 +214,9 @@ export interface RecommendationInput {
   
   /** Optional tags for additional context (e.g., ["foreign", "online"]) */
   tags?: string[];
+  
+  /** User preferences to factor into recommendations */
+  preferences?: UserPreferences;
 }
 
 /**
