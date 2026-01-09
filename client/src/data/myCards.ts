@@ -17,14 +17,14 @@ export const MY_CARDS: Omit<Card, 'isActive'>[] = [
     network: 'American Express',
     name: 'American Express Gold Card',
     rewardsProfile: {
-      baseRate: 1,
+      baseRate: 1, // 1x Membership Rewards points
       categoryMultipliers: {
-        dining: 4, // Up to $50k/year, then 1x
-        groceries: 4, // U.S. supermarkets up to $25k/year, then 1x
-        flights: 3, // Booked directly with airlines or amextravel.com
-        other: 1
+        dining: 4, // 4x Membership Rewards points at restaurants (up to $50k/year, then 1x)
+        groceries: 4, // 4x Membership Rewards points at U.S. supermarkets (up to $25k/year, then 1x)
+        flights: 3, // 3x Membership Rewards points on flights booked directly with airlines or amextravel.com
+        other: 1 // 1x Membership Rewards points
       },
-      notes: '$120 annual dining credit ($10/month at Grubhub, Seamless, The Cheesecake Factory, Goldbelly, Wine.com, Milk Bar, and select Shake Shack locations)'
+      notes: '$120 annual dining credit ($10/month at Grubhub, Seamless, The Cheesecake Factory, Goldbelly, Wine.com, Milk Bar, and select Shake Shack locations). All rewards are in Membership Rewards points.'
     },
     annualFee: 250,
     benefits: [
@@ -62,14 +62,14 @@ export const MY_CARDS: Omit<Card, 'isActive'>[] = [
     network: 'American Express',
     name: 'The Platinum Card from American Express',
     rewardsProfile: {
-      baseRate: 1,
+      baseRate: 1, // 1x Membership Rewards points
       categoryMultipliers: {
-        flights: 5, // Booked directly with airlines or via Amex Travel (up to $500k/year)
-        hotels: 5, // Prepaid hotels booked via Amex Travel
-        dining: 1,
-        other: 1
+        flights: 5, // 5x Membership Rewards points on flights booked directly with airlines or via Amex Travel (up to $500k/year)
+        hotels: 5, // 5x Membership Rewards points on prepaid hotels booked via Amex Travel
+        dining: 1, // 1x Membership Rewards points
+        other: 1 // 1x Membership Rewards points
       },
-      notes: '5x points on flights and prepaid hotels. $695 annual fee offset by extensive credits.'
+      notes: '5x Membership Rewards points on flights and prepaid hotels via Amex Travel. $695 annual fee offset by extensive credits.'
     },
     annualFee: 695,
     benefits: [
@@ -127,15 +127,15 @@ export const MY_CARDS: Omit<Card, 'isActive'>[] = [
     network: 'American Express',
     name: 'Delta SkyMiles Gold American Express Card',
     rewardsProfile: {
-      baseRate: 1,
+      baseRate: 1, // 1x Delta SkyMiles
       categoryMultipliers: {
-        flights: 2, // Delta purchases only
-        dining: 2, // U.S. restaurants
-        groceries: 2, // U.S. supermarkets
-        hotels: 1, // Not 2x, corrected
-        other: 1
+        flights: 2, // 2x Delta SkyMiles on Delta purchases
+        dining: 2, // 2x Delta SkyMiles at U.S. restaurants
+        groceries: 2, // 2x Delta SkyMiles at U.S. supermarkets
+        hotels: 1, // 1x Delta SkyMiles
+        other: 1 // 1x Delta SkyMiles
       },
-      notes: '2x miles on Delta purchases, U.S. restaurants, and U.S. supermarkets. MQD waiver at $25k spend.'
+      notes: '2x Delta SkyMiles on Delta purchases, U.S. restaurants, and U.S. supermarkets. MQD waiver at $25k spend. All rewards are in Delta SkyMiles.'
     },
     annualFee: 99,
     benefits: [
@@ -180,16 +180,16 @@ export const MY_CARDS: Omit<Card, 'isActive'>[] = [
     network: 'Visa',
     name: 'Disney Premier Visa Card',
     rewardsProfile: {
-      baseRate: 1,
+      baseRate: 1, // 1% Disney Rewards Dollars
       categoryMultipliers: {
-        groceries: 2, // U.S. supermarkets and grocery stores
-        gas: 2, // U.S. gas stations
-        dining: 2, // U.S. restaurants
-        restaurants: 2, // Alias for dining (backwards compatibility)
-        disney: 2, // Disney purchases
-        other: 1
+        groceries: 2, // 2% Disney Rewards Dollars at U.S. supermarkets and grocery stores
+        gas: 2, // 2% Disney Rewards Dollars at U.S. gas stations
+        dining: 2, // 2% Disney Rewards Dollars at U.S. restaurants
+        restaurants: 2, // 2% Disney Rewards Dollars (alias for dining, backwards compatibility)
+        disney: 2, // 2% Disney Rewards Dollars on Disney purchases
+        other: 1 // 1% Disney Rewards Dollars
       },
-      notes: 'Earn 2% in Disney Rewards Dollars on Disney, gas, groceries, restaurants. 1% on all other purchases.'
+      notes: 'Earn 2% Disney Rewards Dollars on Disney, gas, groceries, and restaurants. 1% Disney Rewards Dollars on all other purchases.'
     },
     annualFee: 49,
     benefits: [
@@ -225,11 +225,11 @@ export const MY_CARDS: Omit<Card, 'isActive'>[] = [
     network: 'Visa',
     name: 'Chase Debit Card',
     rewardsProfile: {
-      baseRate: 1,
+      baseRate: 1, // No rewards (debit card)
       categoryMultipliers: {
-        other: 1
+        other: 1 // No rewards (debit card)
       },
-      notes: 'Debit card with no rewards, but accepted everywhere Visa is accepted (including Costco and warehouse clubs)'
+      notes: 'Debit card with no rewards. Accepted everywhere Visa is accepted, including Costco and warehouse clubs.'
     },
     annualFee: 0,
     benefits: [
@@ -253,13 +253,13 @@ export const MY_CARDS: Omit<Card, 'isActive'>[] = [
     network: 'Visa',
     name: 'Barclays AAdvantage Aviator Red World Elite',
     rewardsProfile: {
-      baseRate: 1,
+      baseRate: 1, // 1x AAdvantage miles
       categoryMultipliers: {
-        flights: 2, // American Airlines purchases only
-        american_airlines: 2, // Alias for flights
-        other: 1
+        flights: 2, // 2x AAdvantage miles on American Airlines purchases
+        american_airlines: 2, // 2x AAdvantage miles (alias for flights, backwards compatibility)
+        other: 1 // 1x AAdvantage miles
       },
-      notes: '2x AAdvantage miles on American Airlines purchases. 1x miles on everything else. Known for black/red card design.'
+      notes: '2x AAdvantage miles on American Airlines purchases. 1x AAdvantage miles on everything else. Known for black/red card design.'
     },
     annualFee: 99,
     benefits: [

@@ -61,7 +61,7 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, setCurrentPage }
       <div className={`sidebar ${sidebarOpen ? 'sidebar-open' : 'sidebar-closed'} ${isMobile ? 'sidebar-mobile' : ''}`}>
         <div className="sidebar-header">
           <h2 className="sidebar-title">
-            {sidebarOpen ? 'Hazard Lights' : 'HL'}
+            {sidebarOpen ? 'Credit Card Advisor' : 'CCA'}
           </h2>
           <button className="sidebar-toggle" onClick={toggleSidebar} aria-label={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}>
             {sidebarOpen ? '←' : '→'}
@@ -93,10 +93,9 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, setCurrentPage }
         <div className="content-wrapper">
           <div className="top-bar">
             <div className="top-bar-left">
-              <h1 className="page-title">Hazard Lights</h1>
+              <h1 className="page-title">Credit Card Advisor</h1>
             </div>
             <div className="top-bar-right">
-              <span className="app-subtitle">Credit Card Advisor</span>
             </div>
           </div>
 
