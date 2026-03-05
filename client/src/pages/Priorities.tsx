@@ -5,8 +5,8 @@
  * Replaces basic sliders with a more sophisticated system.
  */
 
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect, useCallback } from 'react';
+import { motion } from 'framer-motion';
 import { initializeWallet } from '../services/localStorage';
 import { savePreferences, getPreferences, UserPreferences } from '../services/localStorage';
 import { Card, Merchant } from '../domain/models';
@@ -56,12 +56,7 @@ const Priorities: React.FC = () => {
     }));
   }, [primaryObjective, priorities, constraints]);
 
-  useEffect(() => {
-    // Update preview when wallet or preferences change
-    updatePreview();
-  }, [primaryObjective, priorities, constraints, wallet]);
-
-  const updatePreview = () => {
+  const updatePreview = useCallback(() => {
     // Generate preview of default card for each category
     const activeCards = wallet.filter(c => c.isActive);
     const preview: Record<string, string> = {};
@@ -108,7 +103,12 @@ const Priorities: React.FC = () => {
     });
 
     setPreviewData(preview);
-  };
+  }, [wallet, primaryObjective, priorities, constraints]);
+
+  useEffect(() => {
+    // Update preview when wallet or preferences change
+    updatePreview();
+  }, [updatePreview]);
 
   const objectiveOptions: Array<{ value: UserPreferences['primaryObjective']; label: string; description: string }> = [
     { value: 'maximize_points', label: 'Maximize Points', description: 'Get the most points/benefits possible' },

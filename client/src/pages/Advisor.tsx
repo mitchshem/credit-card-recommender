@@ -9,9 +9,9 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, Merchant, RecommendationResult } from '../domain/models';
 import { getBestCardForMerchant } from '../domain/recommendationEngine';
-import { initializeWallet, saveWallet } from '../services/localStorage';
+import { initializeWallet } from '../services/localStorage';
 import { getPreferences } from '../services/localStorage';
-import { CATEGORIES, CATEGORY_NAMES, COSTCO_CONSTRAINT } from '../data/myCards';
+import { CATEGORIES, CATEGORY_NAMES } from '../data/myCards';
 
 const Advisor: React.FC = () => {
   const [wallet, setWallet] = useState<Card[]>([]);
@@ -474,6 +474,71 @@ const Advisor: React.FC = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Offers Placeholder */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        style={{
+          background: 'rgba(255, 255, 255, 0.8)',
+          backdropFilter: 'blur(20px)',
+          padding: '2rem',
+          borderRadius: 'var(--radius-2xl)',
+          marginBottom: '2rem',
+          border: '1px solid var(--glass-border)'
+        }}
+      >
+        <h3 style={{
+          marginBottom: '1rem',
+          color: 'var(--primary-800)',
+          fontSize: '1.4rem',
+          fontWeight: 700
+        }}>
+          Offers (Coming Soon)
+        </h3>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+          gap: '1rem',
+          marginBottom: '1rem'
+        }}>
+          <div style={{
+            padding: '1rem',
+            background: 'white',
+            borderRadius: 'var(--radius-lg)',
+            border: '1px solid var(--primary-200)'
+          }}>
+            <div style={{ fontWeight: 700, color: 'var(--primary-800)', marginBottom: '0.4rem' }}>
+              Dining Bonus Preview
+            </div>
+            <div style={{ color: 'var(--primary-600)', fontSize: '0.9rem' }}>
+              Placeholder for partner dining statement credit offers.
+            </div>
+          </div>
+          <div style={{
+            padding: '1rem',
+            background: 'white',
+            borderRadius: 'var(--radius-lg)',
+            border: '1px solid var(--primary-200)'
+          }}>
+            <div style={{ fontWeight: 700, color: 'var(--primary-800)', marginBottom: '0.4rem' }}>
+              Travel Boost Preview
+            </div>
+            <div style={{ color: 'var(--primary-600)', fontSize: '0.9rem' }}>
+              Placeholder for merchant travel cashback and points multipliers.
+            </div>
+          </div>
+        </div>
+        <p style={{
+          margin: 0,
+          color: 'var(--primary-600)',
+          fontSize: '0.875rem',
+          fontStyle: 'italic'
+        }}>
+          Disclaimer: No affiliate links or sponsored offers are active yet.
+        </p>
+      </motion.div>
 
       {/* Empty State */}
       {activeCards.length === 0 && (

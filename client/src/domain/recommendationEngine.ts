@@ -336,8 +336,6 @@ function generateReason(
   rewardRate: number,
   merchant: Merchant
 ): string {
-  const cardName = card.nickname || card.name;
-
   if (rewardRate === card.rewardsProfile.baseRate) {
     return `${rewardRate}x base rate on all purchases`;
   }
@@ -479,4 +477,3 @@ export function findMatchingCategory(
   }
   return null;
 }
-

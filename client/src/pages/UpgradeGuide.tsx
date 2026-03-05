@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { initializeWallet } from '../services/localStorage';
 import { Card } from '../domain/models';
-import { MY_CARDS } from '../data/myCards';
 
 const UpgradeGuide: React.FC = () => {
   const [wallet, setWallet] = useState<Card[]>([]);

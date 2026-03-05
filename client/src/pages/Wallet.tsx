@@ -8,7 +8,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card } from '../domain/models';
 import { initializeWallet, saveWallet } from '../services/localStorage';
-import { MY_CARDS, CATEGORY_NAMES } from '../data/myCards';
+import { CATEGORY_NAMES } from '../data/myCards';
 
 const Wallet: React.FC = () => {
   const [wallet, setWallet] = useState<Card[]>([]);

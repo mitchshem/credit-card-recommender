@@ -7,8 +7,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Card } from '../domain/models';
-import { initializeWallet, saveWallet } from '../services/localStorage';
-import { CATEGORIES, CATEGORY_NAMES, COSTCO_CONSTRAINT } from '../data/myCards';
+import { initializeWallet } from '../services/localStorage';
+import { CATEGORIES, CATEGORY_NAMES } from '../data/myCards';
 import { getBestCardForMerchant } from '../domain/recommendationEngine';
 import { Merchant } from '../domain/models';
 
