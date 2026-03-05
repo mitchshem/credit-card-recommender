@@ -12,6 +12,8 @@ import { getBestCardForMerchant } from '../domain/recommendationEngine';
 import { initializeWallet } from '../services/localStorage';
 import { getPreferences } from '../services/localStorage';
 import { CATEGORIES, CATEGORY_NAMES } from '../data/myCards';
+import { OFFERS, OfferConfig } from '../config/offers';
+import { trackOfferClickIntent } from '../services/offerTracking';
 
 const Advisor: React.FC = () => {
   const [wallet, setWallet] = useState<Card[]>([]);
@@ -127,6 +129,14 @@ const Advisor: React.FC = () => {
 
   const bestCard = recommendation && wallet.find(c => c.id === recommendation.bestCardId);
   const activeCards = wallet.filter(c => c.isActive);
+
+  const handleOfferClick = (offer: OfferConfig) => {
+    trackOfferClickIntent(offer);
+    if (!offer.isActive) {
+      return;
+    }
+    window.open(offer.ctaUrl, '_blank', 'noopener,noreferrer');
+  };
 
   return (
     <div className="page-container">
@@ -475,7 +485,7 @@ const Advisor: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* Offers Placeholder */}
+      {/* Offers */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -503,32 +513,59 @@ const Advisor: React.FC = () => {
           gap: '1rem',
           marginBottom: '1rem'
         }}>
-          <div style={{
-            padding: '1rem',
-            background: 'white',
-            borderRadius: 'var(--radius-lg)',
-            border: '1px solid var(--primary-200)'
-          }}>
-            <div style={{ fontWeight: 700, color: 'var(--primary-800)', marginBottom: '0.4rem' }}>
-              Dining Bonus Preview
+          {OFFERS.map((offer) => (
+            <div
+              key={offer.id}
+              style={{
+                padding: '1rem',
+                background: 'white',
+                borderRadius: 'var(--radius-lg)',
+                border: '1px solid var(--primary-200)',
+                opacity: offer.isActive ? 1 : 0.9
+              }}
+            >
+              <div style={{ fontWeight: 700, color: 'var(--primary-800)', marginBottom: '0.4rem' }}>
+                {offer.title}
+              </div>
+              <div style={{ color: 'var(--primary-600)', fontSize: '0.9rem', marginBottom: '0.75rem' }}>
+                {offer.description}
+              </div>
+              <div style={{ marginBottom: '0.75rem' }}>
+                <span style={{
+                  display: 'inline-block',
+                  padding: '0.2rem 0.5rem',
+                  borderRadius: '999px',
+                  fontSize: '0.75rem',
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.03em',
+                  background: 'var(--primary-100)',
+                  color: 'var(--primary-700)'
+                }}>
+                  {offer.category}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleOfferClick(offer)}
+                aria-disabled={!offer.isActive}
+                style={{
+                  width: '100%',
+                  padding: '0.6rem 0.75rem',
+                  borderRadius: 'var(--radius-md)',
+                  border: '1px solid',
+                  borderColor: offer.isActive ? 'var(--accent-500)' : 'var(--primary-300)',
+                  background: offer.isActive ? 'var(--accent-500)' : 'var(--primary-100)',
+                  color: offer.isActive ? 'white' : 'var(--primary-600)',
+                  fontWeight: 600,
+                  cursor: offer.isActive ? 'pointer' : 'not-allowed'
+                }}
+                title={offer.isActive ? offer.ctaLabel : 'Coming Soon'}
+              >
+                {offer.isActive ? offer.ctaLabel : 'Coming Soon'}
+              </button>
             </div>
-            <div style={{ color: 'var(--primary-600)', fontSize: '0.9rem' }}>
-              Placeholder for partner dining statement credit offers.
-            </div>
-          </div>
-          <div style={{
-            padding: '1rem',
-            background: 'white',
-            borderRadius: 'var(--radius-lg)',
-            border: '1px solid var(--primary-200)'
-          }}>
-            <div style={{ fontWeight: 700, color: 'var(--primary-800)', marginBottom: '0.4rem' }}>
-              Travel Boost Preview
-            </div>
-            <div style={{ color: 'var(--primary-600)', fontSize: '0.9rem' }}>
-              Placeholder for merchant travel cashback and points multipliers.
-            </div>
-          </div>
+          ))}
         </div>
         <p style={{
           margin: 0,
