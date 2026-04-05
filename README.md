@@ -1,4 +1,4 @@
-# Credit Card Recommender App
+# Card Compass
 
 A simple React + Node.js application that helps users find the best credit card from their wallet for specific merchant purchases.
 
